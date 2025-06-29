@@ -1,6 +1,6 @@
 # FranctionApp
 
-## 📁 Struktur Direktori
+## 📁 Main Struktur Direktori
 
 ```text
 .  
