@@ -1,198 +1,221 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.franccompose
 
+import android.util.Patterns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.example.franccompose.fiturmulaibelajar.datastore.DataStoreManager
+import kotlinx.coroutines.launch
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    name: String = "Someone",
-    email: String = "someone@gmail.com",
-    kelas: String = "6A",
-    sekolah: String = "SDN Contoh",
     onLogoutClick: () -> Unit = {}
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(24.dp))
+    val context = LocalContext.current
+    val dataStore = remember { DataStoreManager(context) }
+    val scope = rememberCoroutineScope()
 
-        Text(
-            text = "My Profile",
-            fontSize = 30.sp,
-            color = Color(0xFF0D75BB),
-            fontWeight = FontWeight.Bold
-        )
+    var name by remember { mutableStateOf("") }
+    var kelas by remember { mutableStateOf("") }
+    var emailState by remember { mutableStateOf("") }
+    var sekolahState by remember { mutableStateOf("") }
+    var showWarning by remember { mutableStateOf(false) }
+    var warningMessage by remember { mutableStateOf("") }
+    var akunDiganti by remember { mutableStateOf(false) }
 
-        Spacer(modifier = Modifier.height(32.dp))
+    val snackbarHostState = remember { SnackbarHostState() }
+    var currentLevel by remember { mutableStateOf(1) }
 
-        Image(
-            painter = painterResource(id = R.drawable.proficon),
-            contentDescription = "Avatar",
-            modifier = Modifier
-                .size(100.dp)
-                .clip(CircleShape)
-                .border(3.dp, Color(0xFF0D75BB), CircleShape)
-        )
+    // Ambil data user
+    LaunchedEffect(Unit) {
+        val user = dataStore.getLastUser()
+        user?.let {
+            name = it.first
+            kelas = it.second
+            currentLevel = dataStore.getFinalLevel(name, kelas)
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            "Level 1",
-            color = Color(0xFF2E7D32),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        Spacer(modifier = Modifier.height(36.dp))
-
-        // NAMA
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text("Nama", color = Color(0xFF3F51B5), fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(4.dp))
-            OutlinedTextField(
-                value = name,
-                onValueChange = {},
-                readOnly = true,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color(0xFF3F51B5),
-                    unfocusedBorderColor = Color(0xFF03A9F4),
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
+            val (email, sekolah) = dataStore.getUserInfo(name, kelas)
+            emailState = email
+            sekolahState = sekolah
         }
+    }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // EMAIL
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text("Email", color = Color(0xFFFF9800), fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(4.dp))
-            OutlinedTextField(
-                value = email,
-                onValueChange = {},
-                readOnly = true,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color(0xFFFF9800),
-                    unfocusedBorderColor = Color(0xFFFF9800),
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // KELAS
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text("Kelas", color = Color(0xFF9C27B0), fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(4.dp))
-            OutlinedTextField(
-                value = kelas,
-                onValueChange = {},
-                readOnly = true,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color(0xFF9C27B0),
-                    unfocusedBorderColor = Color(0xFFBA68C8),
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // SEKOLAH
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text("Sekolah", color = Color(0xFF009688), fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(4.dp))
-            OutlinedTextField(
-                value = sekolah,
-                onValueChange = {},
-                readOnly = true,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color(0xFF009688),
-                    unfocusedBorderColor = Color(0xFF80CBC4),
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        // TOMBOL
+    Scaffold(
+        containerColor = Color.White,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+    ) { padding ->
         Column(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxSize()
+                .padding(padding)
+                .padding(horizontal = 16.dp)
+                .background(Color.White),
+            verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val buttonModifier = Modifier
-                .fillMaxWidth(0.5f)
-                .padding(vertical = 6.dp)
+            Text("My Profile", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color(0xFF0D75BB))
 
-            Button(
-                onClick = { /* TODO: Simpan */ },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-                shape = RoundedCornerShape(8.dp),
-                modifier = buttonModifier
-            ) {
-                Text("Simpan", color = Color.White)
+            Image(
+                painter = painterResource(id = R.drawable.proficon),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+                    .border(2.dp, Color(0xFF0D75BB), CircleShape)
+            )
+
+            Text(text = "Level $currentLevel", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2E7D32))
+
+            if (akunDiganti) {
+                Text("Akun berhasil diganti", color = Color(0xFF4CAF50), fontSize = 13.sp)
             }
 
-            Button(
-                onClick = { navController.navigate("secScreen") },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4)),
-                shape = RoundedCornerShape(8.dp),
-                modifier = buttonModifier
-            ) {
-                Text("Ganti Akun", color = Color.White)
+            ProfileField("Nama", name, readOnly = true, borderColor = Color(0xFF3F51B5))
+            ProfileField("Email", emailState, onValueChange = { emailState = it }, borderColor = Color(0xFFFF9800))
+            ProfileField("Kelas", kelas, readOnly = true, borderColor = Color(0xFF9C27B0))
+            ProfileField("Sekolah", sekolahState, onValueChange = { sekolahState = it }, borderColor = Color(0xFF009688))
+
+            if (showWarning) {
+                Text(
+                    text = warningMessage,
+                    color = Color.Red,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium
+                )
             }
 
-            Button(
-                onClick = { navController.navigate("homeScreen") },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF0D0D)),
-                shape = RoundedCornerShape(8.dp),
-                modifier = buttonModifier
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Kembali", color = Color.White)
+                Button(
+                    onClick = {
+                        if (emailState.isBlank() || sekolahState.isBlank()) {
+                            showWarning = true
+                            warningMessage = "Email dan Sekolah tidak boleh kosong!"
+                        } else if (!Patterns.EMAIL_ADDRESS.matcher(emailState).matches()) {
+                            showWarning = true
+                            warningMessage = "Format email tidak valid!"
+                        } else {
+                            showWarning = false
+                            scope.launch {
+                                dataStore.saveUserInfo(name, kelas, emailState, sekolahState)
+                                snackbarHostState.showSnackbar("Data berhasil disimpan")
+                            }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Simpan", color = Color.White, fontSize = 13.sp)
+                }
+
+                Button(
+                    onClick = {
+                        scope.launch {
+                            dataStore.clearLastUser()
+                        }
+                        emailState = ""
+                        sekolahState = ""
+                        akunDiganti = true
+                        showWarning = false
+                        navController.navigate("register")
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF03A9F4)),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Ganti Akun", color = Color.White, fontSize = 13.sp)
+                }
+
+                Button(
+                    onClick = { navController.navigate("homeScreen") },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF0D0D)),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Kembali", color = Color.White, fontSize = 13.sp)
+                }
             }
         }
     }
 }
 
 
-
-@Preview(showBackground = true)
 @Composable
-fun ProfileScreenPreview() {
-    ProfileScreen(navController = rememberNavController())
+fun ProfileField(
+    label: String,
+    value: String,
+    onValueChange: ((String) -> Unit)? = null,
+    readOnly: Boolean = false,
+    borderColor: Color = Color.Gray
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(label, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = borderColor)
+        Spacer(modifier = Modifier.height(2.dp))
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange ?: {},
+            readOnly = readOnly,
+            colors = outlinedTextFieldColors(
+                focusedBorderColor = borderColor,
+                unfocusedBorderColor = borderColor.copy(alpha = 0.6f),
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                cursorColor = borderColor
+            ),
+            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }

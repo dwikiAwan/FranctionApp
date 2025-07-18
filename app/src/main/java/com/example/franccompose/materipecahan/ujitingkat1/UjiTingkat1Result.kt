@@ -1,4 +1,4 @@
-package com.example.franccompose.ujitingkat.ujitingkat1
+package com.example.franccompose.materipecahan.ujitingkat1
 
 
 import androidx.compose.foundation.background
@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.example.franccompose.R
 import com.example.franccompose.fiturmulaibelajar.datastore.DataStoreManager
 import com.example.franccompose.quiz.formatTime
+import com.example.franccompose.ujitingkat.ujitingkat1.UjiTingkatViewModel
 
 @Composable
 fun UjiTingkat1ResultScreen(
@@ -45,12 +46,20 @@ fun UjiTingkat1ResultScreen(
 
     LaunchedEffect(Unit) {
         if (isPassed) {
-            viewModel.simpanSkorUjiTingkat(
-                waktu = elapsedTime,
-                onSaved = {
-                    println("✅ Skor Uji Tingkat disimpan & progress/level naik")
-                }
-            )
+            val user = dataStoreManager.getLastUser()
+            user?.let { (nama, kelas) ->
+                // Simpan skor
+                viewModel.simpanSkorUjiTingkat(
+                    waktu = elapsedTime,
+                    onSaved = {
+                        println("✅ Skor Uji Tingkat disimpan")
+                    }
+                )
+
+                // Tambahkan progress dan naik level
+                dataStoreManager.saveProgress(nama, kelas, materiKe + 1) // atau 4
+                dataStoreManager.upgradeLevel(nama, kelas, materiKe, "ujian")
+            }
         } else {
             val user = dataStoreManager.getLastUser()
             user?.let { (nama, kelas) ->
@@ -62,7 +71,8 @@ fun UjiTingkat1ResultScreen(
 
 
 
-     Box(
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(if (isPassed) Color(0xFF4CAF50) else Color(0xFFDA0B0B))

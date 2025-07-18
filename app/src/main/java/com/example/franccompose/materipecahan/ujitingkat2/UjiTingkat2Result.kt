@@ -1,4 +1,4 @@
-package com.example.franccompose.ujitingkat.ujitingkat2
+package com.example.franccompose.materipecahan.ujitingkat2
 
 
 import androidx.compose.foundation.background
@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.example.franccompose.R
 import com.example.franccompose.fiturmulaibelajar.datastore.DataStoreManager
 import com.example.franccompose.quiz.formatTime
+import com.example.franccompose.ujitingkat.ujitingkat1.UjiTingkatViewModel
 
 @Composable
 fun UjiTingkat2ResultScreen(
@@ -37,9 +38,11 @@ fun UjiTingkat2ResultScreen(
     elapsedTime: Int,
     materiKe: Int,
     dataStoreManager: DataStoreManager,
+    viewModel: UjiTingkatViewModel,
     onBackToHome: () -> Unit,
-    onUlangUji: () -> Unit
-)  {
+    onUlangUji: () -> Unit,
+    onNextBelajar: () -> Unit
+) {
     val context = LocalContext.current
     val isPassed = score >= 70 // <- INI DITAMBAHKAN
 

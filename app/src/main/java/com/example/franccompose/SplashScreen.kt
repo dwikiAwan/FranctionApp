@@ -1,13 +1,20 @@
-// ✅ SplashScreen.kt
 package com.example.franccompose
 
+import Routes
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -19,17 +26,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.franccompose.fiturmulaibelajar.datastore.DataStoreManager
-import com.example.franccompose.navigation.Routes
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun SplashScreen(navController: NavController) {
     val alpha = remember { Animatable(0f) }
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         alpha.animateTo(1f, animationSpec = tween(1000))
         delay(1000)
 
@@ -72,4 +76,3 @@ fun SplashScreen(navController: NavController) {
         }
     }
 }
-

@@ -1,34 +1,69 @@
 package com.example.franccompose
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.example.franccompose.fiturmulaibelajar.viewmodel.LevelkuViewModel
 
 @Composable
-fun LevelkuScreen(navController: NavController) {
+fun LevelkuScreen(
+    navController: NavController,
+    viewModel: LevelkuViewModel // gunakan viewModel ini langsung
+) {
+    val scrollState = rememberScrollState()
+    val currentLevel by remember { derivedStateOf { viewModel.levelTerbuka } }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadProgress()
+    }
+
+
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF8ED8F8))
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column(modifier = Modifier.fillMaxSize()) {
 
+            // ===== HEADER =====
             Column(
                 modifier = Modifier
                     .weight(0.2f)
@@ -41,7 +76,7 @@ fun LevelkuScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.levicon), // Ganti sesuai drawable
+                        painter = painterResource(id = R.drawable.levicon),
                         contentDescription = "Logo Target",
                         modifier = Modifier.size(100.dp)
                     )
@@ -56,6 +91,7 @@ fun LevelkuScreen(navController: NavController) {
                 }
             }
 
+            // ===== KONTEN =====
             Box(
                 modifier = Modifier
                     .weight(0.8f)
@@ -64,15 +100,15 @@ fun LevelkuScreen(navController: NavController) {
                         color = Color.White,
                         shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
                     )
-            )
-            {
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .padding(bottom = 80.dp)
                         .padding(30.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Box Level
+                    // Bagian atas TIDAK scroll
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -81,7 +117,7 @@ fun LevelkuScreen(navController: NavController) {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Level 2",
+                            text = "Level $currentLevel",
                             fontSize = 60.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
@@ -89,7 +125,7 @@ fun LevelkuScreen(navController: NavController) {
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    Divider(color = Color.Gray.copy(alpha = 0.3f))
+                    HorizontalDivider(color = Color.Gray.copy(alpha = 0.3f))
                     Spacer(modifier = Modifier.height(15.dp))
 
                     Text(
@@ -101,56 +137,72 @@ fun LevelkuScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Daftar riwayat nilai quiz
                     val items = listOf(
-                        "Nilai kuis 1",
-                        "Nilai kuis 2",
-                        "Nilai Uji Tingkat 1",
-                        "Nilai Uji Tingkat 2"
+                        "Quiz Materi 1" to 1,
+                        "Quiz Materi 2" to 2,
+                        "Ujian Tingkat 1" to 3,
+                        "Quiz Materi 3" to 4,
+                        "Quiz Materi 4" to 5,
+                        "Ujian Tingkat 2" to 6
                     )
 
-                    items.forEach { item ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 6.dp)
-                                .background(Color(0xFFE0F4FA), RoundedCornerShape(20.dp))
-                                .padding(horizontal = 12.dp, vertical = 20.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(text = item, fontSize = 20.sp, color = Color.Black)
-                            Icon(
-                                imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "Detail",
-                                tint = Color(0xFF33AADD)
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(30.dp))
-
-                    Button(
-                        onClick = {
-                            navController.navigate("homeScreen")
-                        },
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2266AA)),
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .verticalScroll(scrollState)
                     ) {
-                        Text(text = "Kembali", color = Color.White, fontSize = 16.sp)
+                        items.forEach { (label, materiKe) ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 6.dp)
+                                    .background(Color(0xFFE0F4FA), RoundedCornerShape(20.dp))
+                                    .padding(horizontal = 12.dp, vertical = 20.dp)
+                                    .clickable {
+                                        navController.navigate("rapot/$materiKe")
+                                    },
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(text = label, fontSize = 20.sp, color = Color.Black)
+                                Icon(
+                                    imageVector = Icons.Default.PlayArrow,
+                                    contentDescription = "Detail",
+                                    tint = Color(0xFF33AADD)
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
+
+        // ===== TOMBOL KEMBALI =====
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .shadow(30.dp)
+                .background(Color.White)
+                .padding(16.dp)
+        ) {
+
+
+
+            Button(
+                onClick = {
+                    navController.navigate("homeScreen")
+                },
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2266AA)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Text(text = "Kembali", color = Color.White, fontSize = 16.sp)
+            }
+
+        }
     }
-}
-
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LevelkuScreenPreview() {
-    LevelkuScreen(navController = rememberNavController())
 }

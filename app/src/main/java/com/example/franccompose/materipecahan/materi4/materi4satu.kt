@@ -43,7 +43,7 @@ import com.example.franccompose.materipecahan.PecahanBiasa
 import com.example.franccompose.materipecahan.PecahanCampuran
 
 @Composable
-fun Penjumlahan1Screen(
+fun Pengurangan1Screen(
     navController: NavController,
     title: String = "Materi 4",
     subtitle: String = "Operasi Pengurangan Pecahan",
@@ -263,7 +263,9 @@ fun Penjumlahan1Screen(
                     ) {
                         Button(
                             onClick = {
-                                navController.navigate("daftarmateri")
+                                navController.navigate("daftarMateri") {
+                                    popUpTo("hasilQuiz") { inclusive = true }
+                                }
                             },
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
@@ -273,6 +275,7 @@ fun Penjumlahan1Screen(
                         ) {
                             Text("Kembali", color = Color.White, fontSize = 16.sp)
                         }
+
                         Button(
                             onClick = {
                                 navController.navigate("materi4Quiz")
@@ -307,8 +310,8 @@ fun Penjumlahan1Screen(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun Penjumlahan1ScreenPreview() {
-    Penjumlahan1Screen(
+fun Pengurangan1ScreenPreview() {
+    Pengurangan1Screen(
         navController = rememberNavController()
     )
 }

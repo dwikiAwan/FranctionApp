@@ -48,7 +48,7 @@ fun TentangScreen(navController: NavController) {
                 )
 
                 Text(
-                    text = "Apa itu Fraction App ?",
+                    text = "Apa itu Franction App ?",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
@@ -75,7 +75,7 @@ fun TentangScreen(navController: NavController) {
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Fraction APP adalah aplikasi media pembelajaran berbasis Android yang dirancang khusus untuk membantu siswa/i dalam memahami konsep bilangan pecahan. Aplikasi ini menggunakan pendekatan gamifikasi untuk menciptakan pengalaman belajar yang menyenangkan, interaktif, dan mudah dipahami oleh anak-anak usia dini.",
+                            text = "Franction APP adalah aplikasi media pembelajaran berbasis Android yang dirancang khusus untuk membantu siswa/i dalam memahami konsep bilangan pecahan. Aplikasi ini menggunakan pendekatan gamifikasi untuk menciptakan pengalaman belajar yang menyenangkan, interaktif, dan mudah dipahami oleh anak-anak usia dini.",
                             fontSize = 18.sp,
                             color = Color.Black,
                             textAlign = TextAlign.Center,
