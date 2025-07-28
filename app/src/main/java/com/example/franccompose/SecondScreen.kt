@@ -1,6 +1,9 @@
 package com.example.franccompose
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -60,7 +63,8 @@ fun SecondScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
+            .background(Color.White)
+            .windowInsetsPadding(WindowInsets.systemBars),
         contentAlignment = Alignment.Center
     ) {
         Column(

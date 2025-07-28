@@ -6,19 +6,21 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,22 +43,10 @@ fun UjiTingkat2ResultScreen(
     viewModel: UjiTingkatViewModel,
     onBackToHome: () -> Unit,
     onUlangUji: () -> Unit,
-    onNextBelajar: () -> Unit
+
 ) {
     val context = LocalContext.current
-    val isPassed = score >= 70 // <- INI DITAMBAHKAN
-
-    LaunchedEffect(Unit) {
-        val user = dataStoreManager.getLastUser()
-        if (user != null && score >= 0) {
-            val (nama, kelas) = user
-            dataStoreManager.saveQuizHistory(nama, kelas, score, elapsedTime, materiKe)
-
-            if (isPassed) {
-                dataStoreManager.unlockNextMateri(materiKe)
-            }
-        }
-    }
+    val isPassed = score >= 60
 
 
     Box(
@@ -70,7 +60,8 @@ fun UjiTingkat2ResultScreen(
                 .fillMaxWidth(0.85f)
                 .heightIn(min = 450.dp)
                 .background(Color.White, RoundedCornerShape(30.dp))
-                .padding(horizontal = 24.dp, vertical = 20.dp),
+                .padding(horizontal = 24.dp, vertical = 20.dp)
+                .windowInsetsPadding(WindowInsets.systemBars),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
@@ -113,13 +104,14 @@ fun UjiTingkat2ResultScreen(
             }
 
             Spacer(modifier = Modifier.height(12.dp))
-            Text("Waktu pengerjaan: ${formatTime(elapsedTime)}", fontSize = 18.sp, color = Color.Gray)
+            Text("Waktu pengerjaan: ${formatTime(elapsedTime)}", fontSize = 18.sp, color = Color.Black)
         }
 
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.systemBars)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

@@ -20,6 +20,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -88,7 +89,8 @@ fun RegisScreen(
                 TextButton(onClick = { showDialog = false }) {
                     Text("Tidak")
                 }
-            }
+            },
+                    containerColor = Color.White
         )
     }
 
@@ -128,7 +130,7 @@ fun RegisScreen(
                     unfocusedLabelColor = Color(0xFF5D5FEF),
                     focusedTextColor = Color(0xFF4CAF50),
                     unfocusedTextColor = Color(0xFF5D5FEF),
-                    cursorColor = Color(0xFF5D5FEF)
+                    cursorColor = Color(0xFF5D5FEF),
                 )
             )
 
@@ -146,10 +148,30 @@ fun RegisScreen(
                         value = selectedAngka,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Kelas") },
+                        label = {
+                            Text(
+                                "Kelas",
+                                color = MaterialTheme.colorScheme.onSurface // Adapts to theme (black/white)
+                            )
+                        },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expandedAngka) },
-                        modifier = Modifier.menuAnchor().fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp)
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        // --- Set the background color here ---
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF4CAF50),
+                            unfocusedBorderColor = Color(0xFF5D5FEF),
+                            focusedLabelColor = MaterialTheme.colorScheme.onSurface, // Adapts to theme
+                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurface, // Adapts to theme
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface, // Adapts to theme
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface, // Adapts to theme
+                            cursorColor = Color(0xFF5D5FEF),
+                            // Set the container (background) color for both states to White
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White
+                        )
                     )
                     ExposedDropdownMenu(
                         expanded = expandedAngka,
@@ -157,7 +179,12 @@ fun RegisScreen(
                     ) {
                         angkaList.forEach { angka ->
                             DropdownMenuItem(
-                                text = { Text(angka) },
+                                text = {
+                                    Text(
+                                        angka,
+                                        color = MaterialTheme.colorScheme.onSurface // Adapts to theme
+                                    )
+                                },
                                 onClick = {
                                     selectedAngka = angka
                                     expandedAngka = false
@@ -177,10 +204,30 @@ fun RegisScreen(
                         value = selectedHuruf,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Subkelas") },
+                        label = {
+                            Text(
+                                "Subkelas",
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expandedHuruf) },
-                        modifier = Modifier.menuAnchor().fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp)
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        // --- Set the background color here ---
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF4CAF50),
+                            unfocusedBorderColor = Color(0xFF5D5FEF),
+                            focusedLabelColor = MaterialTheme.colorScheme.onSurface, // Adapts to theme
+                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurface, // Adapts to theme
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface, // Adapts to theme
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface, // Adapts to theme
+                            cursorColor = Color(0xFF5D5FEF),
+                            // Set the container (background) color for both states to White
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White
+                        )
                     )
                     ExposedDropdownMenu(
                         expanded = expandedHuruf,
@@ -188,7 +235,12 @@ fun RegisScreen(
                     ) {
                         hurufList.forEach { huruf ->
                             DropdownMenuItem(
-                                text = { Text(huruf) },
+                                text = {
+                                    Text(
+                                        huruf,
+                                        color = MaterialTheme.colorScheme.onSurface // Adapts to theme
+                                    )
+                                },
                                 onClick = {
                                     selectedHuruf = huruf
                                     expandedHuruf = false
@@ -224,7 +276,8 @@ fun RegisScreen(
                     text = "Mohon isi semua data terlebih dahulu.",
                     color = Color.Red,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.background(Color.White)
                 )
             }
 

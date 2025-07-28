@@ -38,6 +38,7 @@ import com.example.franccompose.materipecahan.materi2.BandingUrut4Screen
 import com.example.franccompose.materipecahan.materi3.Penjumlahan1Screen
 import com.example.franccompose.materipecahan.materi3.Penjumlahan2Screen
 import com.example.franccompose.materipecahan.materi4.Pengurangan1Screen
+import com.example.franccompose.materipecahan.materi4.Pengurangan2Screen
 import com.example.franccompose.materipecahan.ujitingkat1.UjiTingkat1ResultScreen
 import com.example.franccompose.materipecahan.ujitingkat1.UjiTingkat1Screen
 import com.example.franccompose.materipecahan.ujitingkat2.UjiTingkat2ResultScreen
@@ -71,8 +72,15 @@ fun AppNavHost(
             DaftarMateriScreen(navController, materiViewModel)
         }
         composable(Routes.home) {
-            HomeActivity(navController)
+            val context = LocalContext.current
+            val application = context.applicationContext as Application
+            val viewModel: LevelkuViewModel = viewModel(
+                factory = LevelkuViewModelFactory(application)
+            )
+
+            HomeActivity(navController, viewModel = viewModel)
         }
+
         composable(Routes.tentang) {
             TentangScreen(navController)
         }
@@ -136,6 +144,11 @@ fun AppNavHost(
         composable("materi4satu") {
             Pengurangan1Screen(navController)
         }
+        composable("materi4dua") {
+            Pengurangan2Screen(navController)
+        }
+
+
         //Pemanggilan Quiz
         composable("materi1Quiz") { navBackStackEntry ->
             val context = LocalContext.current
@@ -220,28 +233,21 @@ fun AppNavHost(
                 factory = MateriViewModelFactory(context.applicationContext as Application)
             )
             val coroutineScope = rememberCoroutineScope()
-            val isPassed = skor >= 70
+            val isPassed = skor >= 60
             val sudahDiproses = remember { mutableStateOf(false) }
 
             LaunchedEffect(Unit) {
                 if (!sudahDiproses.value) {
-                    if (isPassed) {
-                        viewModel.simpanSkorUjiTingkat(
-                            waktu = waktu,
-                            onSaved = {
-                                println("✅ Skor Uji Tingkat disimpan & progress/level naik")
+                    val user = dataStoreManager.getLastUser()
+                    user?.let { (nama, kelas) ->
+                        if (isPassed) {
+                            val currentLevel = dataStoreManager.getFinalLevel(nama, kelas)
+                            if (currentLevel < 4) {
+                                dataStoreManager.saveProgress(nama, kelas, 4)
+                                dataStoreManager.upgradeLevel(nama, kelas, 3, "ujian")
                             }
-                        )
-
-                        val user = dataStoreManager.getLastUser()
-                        user?.let { (nama, kelas) ->
-                            dataStoreManager.saveProgress(nama, kelas, 4) // Materi ke-3
-                            dataStoreManager.upgradeLevel(nama, kelas, 3, "ujian") // dari level 3 → 4
                             materiViewModel.selesaiQuiz(nama, kelas, 3)
-                        }
-                    } else {
-                        val user = dataStoreManager.getLastUser()
-                        user?.let { (nama, kelas) ->
+                        } else {
                             dataStoreManager.saveQuizHistory(nama, kelas, materiKe, skor, waktu)
                             dataStoreManager.saveScore(nama, kelas, materiKe, skor)
                         }
@@ -249,6 +255,7 @@ fun AppNavHost(
                     sudahDiproses.value = true
                 }
             }
+
 
 
             UjiTingkat1ResultScreen(
@@ -268,7 +275,6 @@ fun AppNavHost(
                     }
                 },
                 onNextBelajar = {
-                    // ✅ Sesuaikan dengan alur: setelah UjiTingkat1, masuk Materi 3
                     navController.navigate("materi3satu")
                 }
             )
@@ -307,26 +313,29 @@ fun AppNavHost(
             val materiViewModel: MateriViewModel = viewModel(
                 factory = MateriViewModelFactory(context.applicationContext as Application)
             )
+
             val coroutineScope = rememberCoroutineScope()
+            val isPassed = skor >= 60
+            val sudahDiproses = remember { mutableStateOf(false) }
 
             LaunchedEffect(Unit) {
-                viewModel.setDataStore(dataStoreManager)
-                viewModel.simpanSkorUjiTingkat(waktu) {
-                    println("✅ Skor Uji Tingkat berhasil disimpan: $it")
-                }
+                if (!sudahDiproses.value) {
+                    val user = dataStoreManager.getLastUser()
+                    user?.let { (nama, kelas) ->
+                        if (skor >= 60) {
+                            dataStoreManager.saveProgress(nama, kelas, 6)
+                            dataStoreManager.upgradeLevel(nama, kelas, 7, "ujian")
+                            materiViewModel.selesaiQuiz(nama, kelas, 6)
+                        } else {
+                            dataStoreManager.saveQuizHistory(nama, kelas, materiKe, skor, waktu)
+                            dataStoreManager.saveScore(nama, kelas, materiKe, skor)
+                        }
+                    }
 
-                val user = dataStoreManager.getLastUser()
-                user?.let { (nama, kelas) ->
-                    // ✅ Tambahkan penyimpanan progress ke level 7 (setelah UjiTingkat2)
-                    dataStoreManager.saveProgress(nama, kelas, 7)
-
-                    // ✅ Upgrade level ke 7
-                    dataStoreManager.upgradeLevel(nama, kelas, materiKe, "ujian")
-
-                    // ✅ Tandai ujian telah selesai
-                    materiViewModel.selesaiQuiz(nama, kelas, materiKe)
+                    sudahDiproses.value = true
                 }
             }
+
 
             UjiTingkat2ResultScreen(
                 score = skor,
@@ -335,8 +344,8 @@ fun AppNavHost(
                 dataStoreManager = dataStoreManager,
                 viewModel = viewModel,
                 onBackToHome = {
-                    navController.navigate("daftarmateri") {
-                        popUpTo("daftarmateri") { inclusive = true }
+                    navController.navigate("levelku") {
+                        popUpTo("levelku") { inclusive = true }
                     }
                 },
                 onUlangUji = {
@@ -344,13 +353,8 @@ fun AppNavHost(
                         popUpTo("ujitingkat2") { inclusive = true }
                     }
                 },
-                onNextBelajar = {
-                    // ✅ Setelah UjiTingkat2, bisa navigasi ke "levelku" atau ke tampilan lain
-                    navController.navigate("levelku")
-                }
             )
         }
-
 
         composable("hasilQuiz/{skor}/{waktu}/{materiKe}") { backStack ->
             val skor = backStack.arguments?.getString("skor")?.toInt() ?: 0
@@ -390,7 +394,6 @@ fun AppNavHost(
                         }
                     }
                 }
-
                 ,
                 onUlangMateriClick = {
                     val screen = when (materiKe) {
@@ -412,16 +415,19 @@ fun AppNavHost(
                 materiViewModel = materiViewModel
             )
         }
+        // ... (kode lainnya)
+
         composable("rapot/{materiKe}") { backStackEntry ->
             val context = LocalContext.current
             val dataStore = remember { DataStoreManager(context) }
             val materiKe = backStackEntry.arguments?.getString("materiKe")?.toIntOrNull() ?: 1
 
-            var filteredHistory by remember { mutableStateOf<List<Pair<Int, Int>>>(emptyList()) }
+            // Ubah filteredHistory menjadi List of Triple
+            var filteredHistory by remember { mutableStateOf<List<Triple<Int, Int, String>>>(emptyList()) }
 
             val namaMateri = when (materiKe) {
                 1 -> "Quiz Pengenalan Pecahan"
-                2 -> "Quiz Membandingkan Pecahan"
+                2 -> "Quiz Membandingkan dan Mengurutkan Pecahan"
                 3 -> "Ujian Tingkat 1"
                 4 -> "Quiz Penjumlahan Pecahan"
                 5 -> "Quiz Pengurangan Pecahan"
@@ -429,20 +435,19 @@ fun AppNavHost(
                 else -> "Materi Tidak Dikenal"
             }
 
-
             LaunchedEffect(Unit) {
                 val user = dataStore.getLastUser()
                 user?.let { (nama, kelas) ->
+                    // Pastikan pemanggilan ini sekarang mengambil Triple
                     filteredHistory = dataStore.getQuizHistoryForMateri(nama, kelas, materiKe)
                 }
             }
 
             RapotScreen(
                 namaMateri = namaMateri,
-                history = filteredHistory,
+                history = filteredHistory, // Ini sekarang Triple
                 materiKe = materiKe,
                 onBackClick = { navController.popBackStack() },
-
             )
         }
 

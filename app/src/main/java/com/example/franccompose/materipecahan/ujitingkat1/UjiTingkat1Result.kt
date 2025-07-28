@@ -6,12 +6,15 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -19,6 +22,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,43 +40,35 @@ import com.example.franccompose.ujitingkat.ujitingkat1.UjiTingkatViewModel
 fun UjiTingkat1ResultScreen(
     score: Int,
     elapsedTime: Int,
-    materiKe: Int,
+    materiKe: Int, // materiKe will be 3 for Uji Tingkat 1
     dataStoreManager: DataStoreManager,
     viewModel: UjiTingkatViewModel,
     onBackToHome: () -> Unit,
     onUlangUji: () -> Unit,
     onNextBelajar: () -> Unit
 ) {
-    val isPassed = score >= 70
+    val isPassed = score >= 60
+    val sudahDiproses = remember { mutableStateOf(false) } // Keep this to ensure logic runs once
 
     LaunchedEffect(Unit) {
-        if (isPassed) {
-            val user = dataStoreManager.getLastUser()
-            user?.let { (nama, kelas) ->
-                // Simpan skor
-                viewModel.simpanSkorUjiTingkat(
-                    waktu = elapsedTime,
-                    onSaved = {
-                        println("✅ Skor Uji Tingkat disimpan")
-                    }
-                )
+        viewModel.setDataStore(dataStoreManager)
 
-                // Tambahkan progress dan naik level
-                dataStoreManager.saveProgress(nama, kelas, materiKe + 1) // atau 4
-                dataStoreManager.upgradeLevel(nama, kelas, materiKe, "ujian")
+        if (!sudahDiproses.value) {
+            val currentLevel = dataStoreManager.getFinalLevel("namaUser", "kelasUser")
+            if (isPassed && currentLevel < 4) {
+                {
+                    println("Skor Uji Tingkat disimpan & level dinaikkan")
+                }
+            } else {
+                println("Sudah pernah lulus, tidak upgrade level lagi")
             }
-        } else {
-            val user = dataStoreManager.getLastUser()
-            user?.let { (nama, kelas) ->
-                dataStoreManager.saveQuizHistory(nama, kelas, materiKe, score, elapsedTime)
-                dataStoreManager.saveScore(nama, kelas, materiKe, score)
-            }
+            sudahDiproses.value = true
         }
     }
 
 
 
-
+    // --- UI Layout remains largely the same ---
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -126,13 +123,14 @@ fun UjiTingkat1ResultScreen(
             }
 
             Spacer(modifier = Modifier.height(12.dp))
-            Text("Waktu pengerjaan: ${formatTime(elapsedTime)}", fontSize = 18.sp, color = Color.Gray)
+            Text("Waktu pengerjaan: ${formatTime(elapsedTime)}", fontSize = 18.sp, color = Color.Black)
         }
 
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.systemBars)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -175,6 +173,5 @@ fun UjiTingkat1ResultScreen(
                 Text("Kembali ke Beranda", color = Color.Black)
             }
         }
-
     }
 }

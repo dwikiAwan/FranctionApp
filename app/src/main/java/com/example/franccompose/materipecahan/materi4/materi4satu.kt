@@ -9,12 +9,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -32,15 +36,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.franccompose.R
 import com.example.franccompose.materipecahan.PecahanBiasa
-import com.example.franccompose.materipecahan.PecahanCampuran
 
 @Composable
 fun Pengurangan1Screen(
@@ -60,6 +64,7 @@ fun Pengurangan1Screen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF4CAF50))
+            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         Column(
             modifier = Modifier
@@ -69,7 +74,7 @@ fun Pengurangan1Screen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 24.dp, top = 50.dp, end = 24.dp, bottom = 10.dp),
+                    .padding(start = 24.dp, top = 20.dp, end = 24.dp, bottom = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -78,13 +83,13 @@ fun Pengurangan1Screen(
                 ) {
                     Text(
                         text = title,
-                        fontSize = 20.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
                     Text(
                         text = subtitle,
-                        fontSize = 24.sp,
+                        fontSize = 20.sp,
                         color = Color.White
                     )
                 }
@@ -108,211 +113,190 @@ fun Pengurangan1Screen(
                         .padding(24.dp)
                 ) {
 
-                            Text(
-                                "Operasi Pengurangan Pecahan",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp
-                            )
+                    Text(
+                        text = "Operasi Pengurangan Pecahan",
+                        color = Color(0xFFFF6F00), // Orange
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.kurang1), // Gambar donat
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxWidth()
+                            .size(300.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Sobat,",
+                        color = Color(0xFF2962FF), // Biru
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                    Text(
+                        text = "kalian pasti sudah belajar tentang penjumlahan pecahan, kan?",
+                        fontSize = 18.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text("Apa itu Pengurangan Pecahan?", fontWeight = FontWeight.Bold)
-                            Text("Pengurangan pecahan adalah mengurangkan satu pecahan dengan pecahan lainnya.")
-                            Text("Pada prinsipnya pengurangan pecahan sama dengan penjumlahan pecahan")
-                            Text("Secara umum, pengurangan dibagi menjadi dua yaitu : ")
-                            Text("\t 1. Pengurangan bilangan Berpenyebut sama")
-                            Text("\t 1. Pengurangan bilangan Berpenyebut berbeda ")
-                            Text("Contoh : ")
-                            Row {
-                                PecahanBiasa(5, 6)
-                                Text(" - ")
-                                PecahanBiasa(2, 6)
-                                Text(" = ")
-                                PecahanBiasa(3, 6)
+                    Text(
+                        buildAnnotatedString {
+                            append("Nah, sekarang kita akan belajar ")
+                            withStyle(style = SpanStyle(color = Color(0xFFFF6F00))) {
+                                append("pengurangan pecahan.")
                             }
+                            append(" Ternyata, caranya mirip sekali dengan penjumlahan, lho!")
+                        },
+                        fontSize = 16.sp,
+                        color = Color.Black
+                    )
 
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                "1. Pengurangan dengan Penyebut Sama",
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text("Cukup kurangi pembilangnya. Penyebut tetap sama.")
-                            Row {
-                                PecahanBiasa(5, 8)
-                                Text(" - ")
-                                PecahanBiasa(3, 8)
-                                Text(" = ")
-                                PecahanBiasa(2, 8)
-                                Text(" = ")
-                                PecahanBiasa(1, 4)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text( text = "Secara umum, pengurangan pecahan dibagi menjadi ", fontSize = 16.sp)
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(style = SpanStyle(color = Color(0xFF2E7D32))) {
+                                append("dua jenis")
                             }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                "2. Pengurangan dengan Penyebut Berbeda",
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text("Samakan penyebut dengan KPK, lalu kurangi pembilangnya.")
-                            Row {
-                                PecahanBiasa(2, 3)
-                                Text(" - ")
-                                PecahanBiasa(1, 4)
-                                Text(" → KPK dari 3 dan 4 adalah 12 → ")
-                                PecahanBiasa(8, 12)
-                                Text(" - ")
-                                PecahanBiasa(3, 12)
-                                Text(" = ")
-                                PecahanBiasa(5, 12)
+                            append(", yaitu:")
+                        },
+                        fontSize = 16.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("1. Pengurangan pecahan dengan penyebut sama\n" +
+                            "    kalo penyebutnya sama tinggal kita kurangkan saja pembilangnya")
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text("2. Pengurangan pecahan dengan penyebut yang berbeda\n" +
+                            "    Kita harus samakan dulu penyebutnya, setelah itu, baru deh kita kurangkan pembilangnya")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        buildAnnotatedString {
+                            append("Pengurangan pecahan dengan ")
+                            withStyle(style = SpanStyle(color = Color(0xFF2962FF))) {
+                                append("penyebut sama")
                             }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text("3. Pengurangan Pecahan Campuran", fontWeight = FontWeight.Bold)
-                            Text("Pecahan campuran adalah gabungan angka bulat dan pecahan.")
-                            Text("Langkah: pisahkan angka bulat, samakan penyebut pecahan, lalu kurangi.")
-                            Text("Contoh: ")
-                            Row {
-                                PecahanCampuran(8, 3, 4)
-                                Text(" - ")
-                                PecahanCampuran(4, 2, 6)
+                        }
+                        ,
+                        fontSize = 16.sp
+                    )
+                    Text(text = "Pengurangan ini cukup mudah karena kamu hanya\nperlu mengurangkan pembilangnya saja. Berikut ini\ncontohnya:", fontSize = 16.sp)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.kurang2), // Gambar bintang 4/6 - 3/6
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxWidth()
+                            .size(300.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text="Ayo kita hitung terlebih dahulu pembilang dan penyebut\ndari gambar bintang diatas,", fontSize = 17.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        buildAnnotatedString {
+                            append("Nah, sekarang kita akan belajar ")
+                            withStyle(style = SpanStyle(color = Color(0xFFFF6F00))) {
+                                append("pengurangan pecahan.")
                             }
-                            Text("→ (8 - 4) + (")
-                            Row {
-                                PecahanBiasa(3, 4)
-                                Text(" - ")
-                                PecahanBiasa(2, 6)
-                                Text(")")
+                            append(" Ternyata, caranya mirip sekali dengan penjumlahan, lho!")
+                        },
+                        fontSize = 16.sp,
+                        color = Color.Black
+                    )
+
+                    Text(
+                        buildAnnotatedString {
+                            append("penyebut")
+                            withStyle(style = SpanStyle(color = Color.Red)) {
+                                append(" = 6")
                             }
-                            Row {
-                                Text("= 4 + ")
-                                PecahanBiasa(9, 12)
-                                Text(" - ")
-                                PecahanBiasa(4, 12)
-                                Text(" = ")
-                                PecahanCampuran(4, 5, 12)
-                            }
+                        },
+                        fontSize = 16.sp
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text="Kemudian kita hitung berapa nilai pembilang dari kedua\ngambar diatas yang telah kita warnai ataupun diarsir." +
+                            "gambar kiri menunjukan nilai 4 pada pembilangnya gambar kanan menunjukan nilai 3 pada pembilangnya" +
+                            "kita dapat menyimpulkan bentuk pecahan dari kedua\ngambar diatas adalah :", fontSize = 15.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        PecahanBiasa(numerator = 4, denominator = 6)
+                        Text("  -  ", fontSize = 20.sp)
+                        PecahanBiasa(numerator = 3, denominator = 6)
+                    }
 
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text("Contoh Soal:", fontWeight = FontWeight.Bold)
-                            Row {
-                                PecahanCampuran(3, 5, 10)
-                                Text(" - ")
-                                PecahanCampuran(1, 9, 10)
-                            }
-                            Text("Ubah ke pecahan biasa:")
-                            Row {
-                                PecahanBiasa(35, 10)
-                                Text(" - ")
-                                PecahanBiasa(19, 10)
-                                Text(" = ")
-                                PecahanBiasa(16, 10)
-                                Text(" = ")
-                                PecahanBiasa(8, 5)
-                                Text(" = ")
-                                PecahanCampuran(1, 3, 5)
-                            }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text="Dikarenakan penyebutnya sama maka tinggal kita\nkurangkan saja pembilangnya yaitu", fontSize = 16.sp)
+                    Text(text="4 - 3 = 1", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.kurang3), // 4/6 - 3/6 = 1/6
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 280.dp, max = 360.dp) // bisa kamu sesuaikan tinggi minimumnya
+                            .padding(vertical = 8.dp) // jarak atas bawah tidak terlalu besar
+                    )
 
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text("Latihan Soal:", fontWeight = FontWeight.Bold)
-                            Row {
-                                PecahanCampuran(1, 9, 10)
-                                Text(" - ")
-                                PecahanBiasa(3, 5)
-                            }
-                            Text("Ubah ke pecahan biasa:")
-                            Row {
-                                PecahanBiasa(19, 10)
-                                Text(" - ")
-                                PecahanBiasa(6, 10)
-                                Text(" = ")
-                                PecahanBiasa(13, 10)
-                                Text(" = ")
-                                PecahanCampuran(1, 3, 10)
-                            }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text("Kesimpulan:", fontWeight = FontWeight.Bold)
-                            Text("✔ Jika penyebut sama, langsung kurangi pembilang.")
-                            Text("✔ Jika penyebut beda, samakan penyebut dulu.")
-                            Text("✔ Untuk pecahan campuran, ubah ke pecahan biasa atau pisahkan angkanya.")
-
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text("Penutup:", fontWeight = FontWeight.Bold)
-                            Text("Teruslah berlatih dan jangan takut salah! Matematika akan jadi mudah jika sering dilatih.")
-
-
-
-                            Spacer(modifier = Modifier.height(100.dp))
                         }
                     }
                 }
-
-
                 //kolumn
-                Box(
+        // BOTTOM NAVIGATION
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .shadow(8.dp)
+                .background(Color.White)
+                .padding(16.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = {
+                        navController.navigate("daftarMateri") {
+                            popUpTo("hasilQuiz") { inclusive = true }
+                        }
+                    },
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter)
-                        .shadow(8.dp)
-                        .background(Color.White)
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
+                        .width(140.dp)
+                        .height(48.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Button(
-                            onClick = {
-                                navController.navigate("daftarMateri") {
-                                    popUpTo("hasilQuiz") { inclusive = true }
-                                }
-                            },
-                            shape = RoundedCornerShape(20.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
-                            modifier = Modifier
-                                .width(140.dp)
-                                .height(48.dp)
-                        ) {
-                            Text("Kembali", color = Color.White, fontSize = 16.sp)
-                        }
-
-                        Button(
-                            onClick = {
-                                navController.navigate("materi4Quiz")
-                            },
-                            enabled = isScrollAtBottom.value,
-                            shape = RoundedCornerShape(20.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isScrollAtBottom.value) Color(0xFF00BCD4) else Color(
-                                    0xFF03A9F4
-                                ).copy(alpha = 0.5f)
-                            ),
-                            modifier = Modifier
-                                .width(140.dp)
-                                .height(48.dp)
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Quiz", color = Color.White, fontSize = 16.sp)
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Icon(
-                                    imageVector = Icons.Default.PlayArrow,
-                                    contentDescription = "Quiz",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
+                    Text("Kembali", color = Color.White, fontSize = 16.sp)
+                }
+                Button(
+                    onClick = {
+                        navController.navigate("materi4dua")
+                    },
+                    enabled = isScrollAtBottom.value,
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isScrollAtBottom.value) Color(0xFF4CAF50) else Color(0xFF4CAF50).copy(alpha = 0.5f)
+                    ),
+                    modifier = Modifier
+                        .width(140.dp)
+                        .height(48.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Lanjut", color = Color.White, fontSize = 16.sp)
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "Lanjut",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
             }
         }
+            }
+        }
 
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun Pengurangan1ScreenPreview() {
-    Pengurangan1Screen(
-        navController = rememberNavController()
-    )
-}
 

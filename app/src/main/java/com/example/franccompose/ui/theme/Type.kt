@@ -6,14 +6,12 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.example.franccompose.R // pastikan package-nya benar
+import com.example.franccompose.R
 
-// 🔤 FontFamily Righteous
 val RighteousFont = FontFamily(
     Font(R.font.righteous_regular, FontWeight.Normal)
 )
 
-// ✅ Typography dengan RighteousFont
 val Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = RighteousFont,

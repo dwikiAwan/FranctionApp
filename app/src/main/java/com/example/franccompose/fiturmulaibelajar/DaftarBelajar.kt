@@ -4,16 +4,21 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -37,13 +42,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.franccompose.fiturmulaibelajar.datastore.DataStoreManager
 import com.example.franccompose.fiturmulaibelajar.viewmodel.MateriViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
 
 @Composable
 fun DaftarMateriScreen(
@@ -57,7 +63,6 @@ fun DaftarMateriScreen(
     val materiList = viewModel.materiList
     val sudahInit = remember { mutableStateOf(false) }
 
-    // Ambil user dari DataStore langsung
     LaunchedEffect(Unit) {
         val user = dataStore.getLastUser()
         if (user != null && !sudahInit.value) {
@@ -89,6 +94,7 @@ fun DaftarMateriScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .windowInsetsPadding(WindowInsets.systemBars)
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -131,13 +137,16 @@ fun DaftarMateriScreen(
                         .verticalScroll(rememberScrollState())
                 ) {
                     materiList.forEach { materi ->
+                        val customHeight = if (materi.id == 2) 100.dp else 100.dp
+
                         MateriItem(
                             title = materi.title,
                             subtitle = materi.subtitle,
                             iconRes = materi.iconRes,
                             enabled = materi.isUnlocked,
                             isSedangDiproses = materi.isSedangDiproses,
-                            isSelesai = materi.isSelesai
+                            isSelesai = materi.isSelesai,
+                            itemHeight = customHeight
                         ) {
                             when (materi.id) {
                                 1 -> navController.navigate("materi1satu")
@@ -161,7 +170,7 @@ fun DaftarMateriScreen(
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2861A4)),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp)
+                .height(50.dp)
         ) {
             Text("Kembali", color = Color.White, fontSize = 16.sp)
             Spacer(Modifier.height(8.dp))
@@ -177,57 +186,74 @@ fun MateriItem(
     enabled: Boolean,
     isSedangDiproses: Boolean = false,
     isSelesai: Boolean = false,
+    itemHeight: Dp = 100.dp,
     onClick: () -> Unit
 ) {
     val bg = when {
-        !enabled -> Color(0xFF707070) // Terkunci (abu-abu)
-        isSedangDiproses -> Color(0xFFCEBA04) // Kuning saat proses
-        else -> Color(0xFF119E17) // Hijau untuk terbuka atau selesai
+        !enabled -> Color(0xFF707070)
+        isSedangDiproses -> Color(0xFFCEBA04)
+        else -> Color(0xFF119E17)
     }
     val text = if (enabled) Color.White else Color.LightGray
 
-
     var pressed by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(if (pressed) 0.95f else 1f, tween(100), label = "scale")
-    val rot by animateFloatAsState(if (pressed) 2f else 0f, tween(100), label = "rot")
+    val rotationY by animateFloatAsState(if (pressed) 10f else 0f, tween(100), label = "rotationY")
+    val rotationX by animateFloatAsState(if (pressed) -5f else 0f, tween(100), label = "rotationX")
+    val translationZ by animateFloatAsState(if (pressed) -10f else 0f, tween(100), label = "translationZ")
+    val scale by animateFloatAsState(if (pressed) 0.97f else 1f, tween(100), label = "scale")
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp)
-            .height(100.dp)
+            .height(itemHeight)
     ) {
         Row(
             modifier = Modifier
                 .matchParentSize()
-                .shadow(15.dp, RoundedCornerShape(20.dp))
-                .graphicsLayer(scaleX = scale, scaleY = scale, rotationZ = rot)
+                .shadow(25.dp, RoundedCornerShape(20.dp))
+                .graphicsLayer {
+                    this.cameraDistance = 8f * density
+                    this.rotationY = rotationY
+                    this.rotationX = rotationX
+                    this.scaleX = scale
+                    this.scaleY = scale
+                }
                 .background(bg, RoundedCornerShape(12.dp))
                 .padding(10.dp)
                 .pointerInput(enabled) {
-                    awaitPointerEventScope {
-                        while (true) {
-                            val event = awaitPointerEvent()
-                            val down = event.changes.firstOrNull()
-                            if (down?.pressed == true) {
-                                pressed = true
-                            } else {
-                                if (pressed) {
-                                    pressed = false
-                                    if (enabled) onClick()
-                                }
+                    detectTapGestures(
+                        onPress = {
+                            if (enabled) pressed = true
+                            try {
+                                awaitRelease()
+                            } finally {
+                                pressed = false
                             }
+                        },
+                        onTap = {
+                            if (enabled) {
+                                onClick()
+                            }
+                        },
+                        onLongPress = {
+                            pressed = false
                         }
-                    }
-                }
-            ,
+                    )
+                },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(painterResource(iconRes), contentDescription = null, modifier = Modifier.size(50.dp))
             Spacer(Modifier.width(12.dp))
-            Column {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(title, color = text, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text(subtitle, color = text, fontSize = 16.sp)
+                MarqueeText(
+                    text = subtitle,
+                    color = text,
+                    fontSize = 16
+                )
 
                 if (enabled && (isSedangDiproses || isSelesai)) {
                     Box(
@@ -252,4 +278,35 @@ fun MateriItem(
     }
 }
 
+@Composable
+fun MarqueeText(
+    text: String,
+    color: Color,
+    fontSize: Int
+) {
+    val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
 
+    LaunchedEffect(Unit) {
+        while (true) {
+            scrollState.animateScrollTo(scrollState.maxValue)
+            delay(1500)
+            scrollState.animateScrollTo(0)
+            delay(1500)
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(scrollState)
+    ) {
+        Text(
+            text = text,
+            color = color,
+            fontSize = fontSize.sp,
+            softWrap = false,
+            maxLines = 1
+        )
+    }
+}

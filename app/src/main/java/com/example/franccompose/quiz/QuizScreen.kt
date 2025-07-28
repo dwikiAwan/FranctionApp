@@ -1,20 +1,28 @@
 package com.example.franccompose.quiz
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -33,10 +41,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -54,6 +66,10 @@ fun QuizScreen(
     dataStore: DataStoreManager,
     materiKe: Int
 ) {
+    val context = LocalContext.current
+    BackHandler(enabled = true) {
+        Toast.makeText(context, "Selesaikan kuis terlebih dahulu!", Toast.LENGTH_SHORT).show()
+    }
     val namaMateri = when (materiKe) {
         1 -> "Pengenalan Pecahan"
         2 -> "Membandingkan dan Mengurutkan Pecahan"
@@ -70,11 +86,11 @@ fun QuizScreen(
         QuizPopUpCard(
             namaMateri = namaMateri,
             onClose = {
-                navController.popBackStack() // kembali jika tidak jadi kuis
+                navController.popBackStack()
             },
             onStartQuiz = {
-                showPopUp = false // tutup pop up
-                viewModel.loadQuiz(materiKe) // load soal hanya sekali
+                showPopUp = false
+                viewModel.loadQuiz(materiKe)
             }
         )
         return
@@ -105,7 +121,8 @@ fun QuizScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFFB6D9F3))
-                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .padding(horizontal = 16.dp, vertical = 5.dp)
+                .windowInsetsPadding(WindowInsets.systemBars)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -119,31 +136,42 @@ fun QuizScreen(
                     contentDescription = "Icon Quiz",
                     tint = Color.Unspecified,
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(60.dp)
                         .padding(start = 4.dp)
                 )
 
                 Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Spacer(modifier = Modifier.height(30.dp))
-                        Text("QUIZ", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                        Text(namaMateri, fontSize = 16.sp, color = Color.White, textAlign = TextAlign.Center)
+                        Text(
+                            "QUIZ",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        MarqueeText(
+                            text = namaMateri,
+                            fontSize = 16,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
                     }
                 }
 
                 Box(
                     modifier = Modifier
                         .border(1.dp, Color.Red, shape = RoundedCornerShape(12.dp))
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .width(70.dp)
+                        .padding(horizontal = 4.dp, vertical = 6.dp),
+                    contentAlignment = Alignment.Center
                 ) {
                     TimerComponent(
                         totalSeconds = 600,
                         navController = navController,
                         viewModel = viewModel,
-                        dataStore = dataStore,   // ← ini ditambahkan
+                        dataStore = dataStore,
                         materiKe = materiKe
                     )
-
                 }
             }
         }
@@ -157,12 +185,29 @@ fun QuizScreen(
         ) {
             Spacer(modifier = Modifier.height(30.dp))
 
-            Text(
-                text = "${questionIndex + 1}. ${question.question}",
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
-                color = Color.Black
-            )
+            if (question.customQuestionContent != null) {
+                question.customQuestionContent.invoke(questionIndex)
+            } else {
+                Text(
+                    text = "${questionIndex + 1}. ${question.question ?: ""}",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                    color = Color.Black
+                )
+            }
+
+
+            question.imageResId?.let { resId ->
+                Spacer(modifier = Modifier.height(12.dp))
+                Image(
+                    painter = painterResource(id = resId),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -173,7 +218,7 @@ fun QuizScreen(
                     .border(1.dp, Color.Black, RoundedCornerShape(20.dp))
                     .padding(16.dp)
             ) {
-                question.options.forEachIndexed { index, option ->
+                question.options?.forEachIndexed { index, option ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
@@ -192,6 +237,26 @@ fun QuizScreen(
                         Text(option, fontSize = 14.sp, color = Color.Black)
                     }
                 }
+
+                question.optionContents?.forEachIndexed { index, optionComposable ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .selectable(
+                                selected = selectedOption == index,
+                                onClick = { selectedOption = index }
+                            )
+                    ) {
+                        RadioButton(
+                            selected = selectedOption == index,
+                            onClick = { selectedOption = index }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        optionComposable()
+                    }
+                }
             }
         }
 
@@ -200,6 +265,7 @@ fun QuizScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFFB6D9F3))
+                .windowInsetsPadding(WindowInsets.systemBars)
                 .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -266,7 +332,6 @@ fun TimerComponent(
             viewModel.timeLeft = timeLeft
         }
 
-        // ⏱ Waktu habis, simpan skor
         val elapsed = totalSeconds
         viewModel.simpanSkor(dataStore, materiKe, elapsed) { skorFinal ->
             navController.navigate("hasilQuiz/$skorFinal/$elapsed/$materiKe") {
@@ -281,7 +346,9 @@ fun TimerComponent(
         text = String.format("%02d:%02d", minutes, seconds),
         color = Color.Red,
         fontWeight = FontWeight.Bold,
-        fontSize = 14.sp
+        fontSize = 18.sp,
+        softWrap = false,
+        maxLines = 1
     )
 }
 
@@ -294,54 +361,119 @@ fun QuizPopUpCard(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f))
+            .background(Color(0xFFB6D9F3))
             .clickable(enabled = false) {}
     ) {
         Card(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(24.dp),
+                .padding(20.dp),
             shape = RoundedCornerShape(24.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
             Column(
                 modifier = Modifier
-                    .padding(24.dp)
-                    .widthIn(min = 280.dp, max = 380.dp),
+                    .padding(20.dp)
+                    .widthIn(min = 280.dp, max = 500.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("🎉 Perhatian! 🎉", fontWeight = FontWeight.Bold, fontSize = 22.sp, color = Color(0xFFDAA520))
+                Text("🎉 Perhatian! 🎉", fontWeight = FontWeight.Bold, fontSize = 30.sp, color = Color(0xFFDAA520))
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    "Kamu sudah selesai belajar tentang\n\n💚 $namaMateri 💚",
-                    color = Color.Black, fontSize = 16.sp, textAlign = TextAlign.Center
+                    "Kamu sudah selesai belajar tentang",
+                    color = Color.Black, fontSize = 22.sp, textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    "Sekarang waktunya menguji kemampuan kamu! 💪\n\n📋 Akan ada 5 soal pilihan ganda\n⏰ Dengan waktu 10 menit",
-                    fontSize = 15.sp, color = Color.DarkGray, textAlign = TextAlign.Center
+                    "$namaMateri ",
+                    color = Color.Red, fontSize = 22.sp, textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    "Sekarang waktunya menguji kemampuan kamu! 💪",
+                    fontSize = 20.sp, color = Color.DarkGray, textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    "📋 Akan ada 5 soal pilihan ganda\n⏰ Dengan waktu 10 menit",
+                    fontSize = 20.sp, color = Color.DarkGray, textAlign = TextAlign.Start
+                )
+                Spacer(modifier = Modifier.height(25.dp))
                 Text(
                     "Soalnya seru dan mudah kok,\nanggap seperti main game seru 🎮",
-                    fontSize = 14.sp, color = Color(0xFF00796B), fontWeight = FontWeight.Medium, textAlign = TextAlign.Center
+                    fontSize = 20.sp, color = Color(0xFF00796B), fontWeight = FontWeight.Medium, textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(25.dp))
                 Text(
                     "🔥 Semangat ya, kami yakin kamu bisa!",
-                    fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color(0xFF1976D2), textAlign = TextAlign.Center
+                    fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Color(0xFF1976D2), textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(30.dp))
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Button(
                         onClick = onStartQuiz,
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                     ) {
-                        Text("Mulai Kuis", color = Color.White)
+                        Text(text="Mulai Kuis", color = Color.White, fontSize = 20.sp)
                     }
                 }
             }
         }
     }
 }
+
+
+@Composable
+fun MarqueeText(
+    text: String,
+    fontSize: Int = 16,
+    textColor: Color = Color.White,
+    modifier: Modifier = Modifier
+) {
+    val scrollState = rememberScrollState()
+    val textWidth = remember { mutableStateOf(0) }
+    val boxWidth = remember { mutableStateOf(0) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(textWidth.value, boxWidth.value) {
+        if (textWidth.value > boxWidth.value) {
+            while (true) {
+                scrollState.animateScrollTo(scrollState.maxValue)
+                delay(1500)
+                scrollState.animateScrollTo(0)
+                delay(1500)
+            }
+        } else {
+            scrollState.scrollTo(0)
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(24.dp)
+            .onGloballyPositioned {
+                boxWidth.value = it.size.width
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier
+                .horizontalScroll(scrollState, enabled = textWidth.value > boxWidth.value)
+        ) {
+            Text(
+                text = text,
+                fontSize = fontSize.sp,
+                color = textColor,
+                softWrap = false,
+                maxLines = 1,
+                modifier = Modifier.onGloballyPositioned {
+                    textWidth.value = it.size.width
+                }
+            )
+        }
+    }
+}
+
 

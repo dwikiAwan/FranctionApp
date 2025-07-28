@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -30,12 +33,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.franccompose.R
 import com.example.franccompose.materipecahan.PecahanBiasa
 
@@ -46,6 +50,11 @@ fun BandingUrut2Screen(
     subtitle: String = "Membandingkan dan Mengurutkan Pecahan",
     onNextClick: () -> Unit = {}
 ) {
+    val green = Color(0xFF4CAF50)
+    val black = Color.Black
+    val red = Color.Red
+    val blue = Color(0xFF1565C0)
+    val yellow = Color(0xFFFBC02D)
     val scrollState = rememberScrollState()
     val isScrollAtBottom = remember {
         derivedStateOf {
@@ -57,6 +66,7 @@ fun BandingUrut2Screen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF4CAF50))
+            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         Column(
             modifier = Modifier
@@ -66,7 +76,7 @@ fun BandingUrut2Screen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 24.dp, top = 50.dp, end = 24.dp, bottom = 10.dp),
+                    .padding(start = 24.dp, top = 20.dp, end = 24.dp, bottom = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -75,13 +85,13 @@ fun BandingUrut2Screen(
                 ) {
                     Text(
                         text = title,
-                        fontSize = 20.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
                     Text(
                         text = subtitle,
-                        fontSize = 24.sp,
+                        fontSize = 20.sp,
                         color = Color.White
                     )
                 }
@@ -106,241 +116,164 @@ fun BandingUrut2Screen(
                 ) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Mengurutkan Pecahan",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        buildAnnotatedString {
+                            withStyle(SpanStyle(color = green, fontWeight = FontWeight.Bold)) {
+                                append("Ayo ")
+                            }
+                            withStyle(SpanStyle(color = black, fontWeight = FontWeight.Bold)) {
+                                append("kita membandingkan bersama....")
+                            }
+                        },
+                        fontSize = 20.sp
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Mengurutkan Pecahan Bersenebut Sama",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Blue
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "• Untuk mengurutkan pecahan bernyebut sama, sama dengan mengurutkan bilangan cacah.",
-                        fontSize = 16.sp
-                    )
-                    Text("Contoh:", fontWeight = FontWeight.Bold)
-                    Row {
-                        PecahanBiasa(2, 7)
-                        Text(", ")
-                        PecahanBiasa(3, 7)
-                        Text(", ")
-                        PecahanBiasa(6, 7)
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Setelah diurutkan dari nilai terkecil ke terbesar menjadi:")
-                    Row {
-                        PecahanBiasa(2, 7)
-                        Text(" < ")
-                        PecahanBiasa(3, 7)
-                        Text(" < ")
-                        PecahanBiasa(6, 7)
+
+                    // Gambar 3 sarang lebah dan simbol
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.banding2),
+                            contentDescription = "Deskripsi gambar",
+                            modifier = Modifier.size(300.dp)
+                        )
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Text(
-                        text = "Mengurutkan Pecahan Berbeda Penyebut",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Blue
-                    )
-                    Text("• Ubah penyebut menjadi sama menggunakan KPK.")
-                    Text("Contoh:")
-                    Row {
-                        PecahanBiasa(1, 5)
-                        Text(", ")
-                        PecahanBiasa(3, 8)
-                        Text(", ")
-                        PecahanBiasa(7, 10)
-                    }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("KPK dari 5, 8, dan 10 adalah 40")
 
-                    Row {
-                        PecahanBiasa(1, 5)
-                        Text(" = ")
-                        PecahanBiasa(8, 40)
-                    }
-                    Row {
-                        PecahanBiasa(3, 8)
-                        Text(" = ")
-                        PecahanBiasa(15, 40)
-                    }
-                    Row {
-                        PecahanBiasa(7, 10)
-                        Text(" = ")
-                        PecahanBiasa(28, 40)
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Urutan dari nilai terkecil ke terbesar:")
-                    Row {
-                        PecahanBiasa(8, 40)
-                        Text(" < ")
-                        PecahanBiasa(15, 40)
-                        Text(" < ")
-                        PecahanBiasa(28, 40)
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Text(
-                        text = "Mengurutkan Pecahan Campuran",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Blue
-                    )
-                    Text("1. Ubah ke bentuk pecahan biasa")
-                    Row {
-                        Text("Contoh: ")
-                        Text("2 ")
-                        PecahanBiasa(1, 2)
-                        Text(" → ")
-                        PecahanBiasa(5, 2)
-                    }
-                    Text("2. Samakan penyebut semua pecahan")
-                    Row {
-                        PecahanBiasa(5, 2)
-                        Text(", ")
-                        PecahanBiasa(7, 3)
-                        Text(", ")
-                        PecahanBiasa(11, 4)
-                    }
-                    Text("KPK dari 2, 3, dan 4 = 12")
-                    Row {
-                        PecahanBiasa(5, 2)
-                        Text(" = ")
-                        PecahanBiasa(30, 12)
-                    }
-                    Row {
-                        PecahanBiasa(7, 3)
-                        Text(" = ")
-                        PecahanBiasa(28, 12)
-                    }
-                    Row {
-                        PecahanBiasa(11, 4)
-                        Text(" = ")
-                        PecahanBiasa(33, 12)
-                    }
-                    Text("Urutan: ")
-                    Row {
-                        PecahanBiasa(28, 12)
-                        Text(" < ")
-                        PecahanBiasa(30, 12)
-                        Text(" < ")
-                        PecahanBiasa(33, 12)
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "3. Membandingkan pembilang pecahannya",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Blue
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row {
-                        PecahanBiasa(21, 64)
-                        Text(" < ")
-                        PecahanBiasa(36, 64)
-                    }
-                    Text(
-                        text = "Karena 21 < 36, maka urutan pita dari yang paling pendek sampai paling panjang adalah:",
+                    // Penjelasan teks (rata kiri)
+                    Text("Pada gambar diatas menunjukkan sarang lebah.\n\n" +
+                            "Pertama, kita cari pembilangnya yaitu yang telah diberi warna kuning,\n\n" +
+                            "Gambar di samping kiri menunjukkan 4 buah warna kuning, kanan menunjukkan 5 buah.\n\n" +
+                            "Pembilang = 4 dan 5\n\n" +
+                            "Kedua, kita mencari penyebut yang dimana semua lubang kita hitung dari masing-masing gambar mempunyai 7 lubang\n\n" +
+                            "Penyebut = 7",
                         fontSize = 16.sp
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row {
-                        PecahanBiasa(7, 8)
-                        Text(", ")
-                        Text("1 ")
-                        PecahanBiasa(1, 2)
-                        Text(", ")
-                        Text("2 ")
-                        PecahanBiasa(1, 3)
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Bentuk Pecahan
+                    Column(horizontalAlignment = Alignment.Start) {
+                        Text("Bentuk Pecahan:", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            PecahanBiasa(numerator = 4, denominator = 7, fontSize = 20.sp)
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text("dan", fontSize = 16.sp)
+                            Spacer(modifier = Modifier.width(16.dp))
+                            PecahanBiasa(numerator = 5, denominator = 7, fontSize = 20.sp)
+                        }
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Text(
-                        text = "Mengurutkan pecahan dengan membandingkan bilangan bulatnya",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Blue
-                    )
 
                     Spacer(modifier = Modifier.height(16.dp))
+
+                    Text("Nah, pada bentuk pecahan di atas kita dapat melihat 4 itu lebih kecil dari 5 atau 5 lebih besar dari 4\n\nHasilnya:",
+                        fontSize = 16.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Hasil perbandingan dengan emoji dan visual
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.banding3),
+                            contentDescription = "Deskripsi gambar",
+                            modifier = Modifier.size(300.dp)
+                        )
+
+                    }
                     Text(
-                        text = "1. Mengubah pecahan tidak murni menjadi pecahan campuran",
+                        text = "Membandingkan Pecahan",
+                        color = Color.Red,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Penjelasan
+                    Text(
+                        text = "Setelah mengubah penyebut dan pembilang, dilanjutkan dengan membandingkan kedua pecahan seperti cara membandingkan pecahan dengan penyebut sama.",
+                        fontSize = 16.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Contoh soal
+                    Text(
+                        text = "Contoh soal:",
+                        color = Color.Red,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Contoh:")
-                    Row {
-                        PecahanBiasa(8, 7)
-                        Text(", ")
-                        Text("1 ")
-                        PecahanBiasa(1, 2)
-                        Text(", ")
-                        PecahanBiasa(7, 3)
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("• Kita akan mengubah pecahan tidak murni menjadi pecahan campuran")
-                    Text("• Pecahan tidak murni adalah yang pembilangnya lebih besar dari penyebut")
-                    Text("• Misalnya:")
-                    Row {
-                        Text(" 8 ÷ 3 = 2 sisa 2 → ")
-                        Text("2 ")
-                        PecahanBiasa(2, 3)
-                    }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "2. Membandingkan bilangan bulatnya",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Bandingkan: ")
-                    Row {
-                        Text("2 ")
-                        PecahanBiasa(2, 3)
-                        Text(", ")
-                        Text("0 ")
-                        PecahanBiasa(7, 8)
-                        Text(", ")
-                        Text("1 ")
-                        PecahanBiasa(1, 2)
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
+                    // Soal 3/5 ... 6/8
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Kenapa kita beri nilai 0 pada pecahan ")
-                        PecahanBiasa(7, 8)
-                        Text(" karena itu adalah pecahan murni (kurang dari 1)")
+                        PecahanBiasa(3, 5)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("... ", fontSize = 18.sp)
+                        PecahanBiasa(6, 8)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("mari kita bandingkan", fontSize = 16.sp)
                     }
 
-                    Text("Jadi hasil urutannya adalah:")
-                    Row {
-                        PecahanBiasa(7, 8)
-                        Text(" < ")
-                        Text("1 ")
-                        PecahanBiasa(1, 2)
-                        Text(" < ")
-                        Text("2 ")
-                        PecahanBiasa(2, 3)
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Konversi 3/5 = 24/40
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        PecahanBiasa(3, 5)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(" = ", fontSize = 18.sp)
+                        PecahanBiasa(24, 40)
                     }
 
-                    Spacer(modifier = Modifier.height(100.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Konversi 6/8 = 30/40
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        PecahanBiasa(6, 8)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(" = ", fontSize = 18.sp)
+                        PecahanBiasa(30, 40)
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Keterangan KPK
+                    Text(
+                        text = "(keterangan: KPK dari 5 dan 8 adalah 40)",
+                        color = Color.Red,
+                        fontSize = 14.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Kalimat kesimpulan
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Karena 24 < 30 maka ", fontSize = 16.sp)
+                        PecahanBiasa(3, 5)
+                        Text(" < ")
+                        PecahanBiasa(6, 8)
+                    }
+
+                    Text(
+                        "Ternyata, membandingkan pecahan itu gampang, asalkan kita tahu caranya!\n\n" +
+                                "Yuk, terus belajar mengurutkan pecahan supaya makin jago!",
+                        fontSize = 16.sp
+                    )
                 }
             }
-
-            // BOTTOM NAVIGATION
-
         }
+        // BOTTOM NAVIGATION
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -395,15 +328,5 @@ fun BandingUrut2Screen(
             }
         }
     }
-}
-
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun BandingUrut2ScreenPreview() {
-    BandingUrut2Screen(
-        navController = rememberNavController()
-    )
 }
 

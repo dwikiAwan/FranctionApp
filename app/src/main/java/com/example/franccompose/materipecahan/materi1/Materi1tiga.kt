@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -62,6 +65,7 @@ fun PengenalanPecahan3Screen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF4CAF50))
+            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         Column(
             modifier = Modifier
@@ -72,20 +76,20 @@ fun PengenalanPecahan3Screen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 24.dp, top = 50.dp, end = 24.dp, bottom = 10.dp),
+                    .padding(start = 24.dp, top = 20.dp, end = 24.dp, bottom = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
                     Text(
                         text = title,
-                        fontSize = 20.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
                     Text(
                         text = subtitle,
-                        fontSize = 24.sp,
+                        fontSize = 20.sp,
                         color = Color.White
                     )
                 }
@@ -321,12 +325,4 @@ fun PengenalanPecahan3Screen(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PengenalanPecahan3ScreenPreview() {
-    PengenalanPecahan3Screen(
-        navController = rememberNavController(),
-        title = "Materi 1",
-        subtitle = "Pengenalan Pecahan",
-    )
-}
+

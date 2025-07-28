@@ -7,6 +7,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 private val Context.dataStore by preferencesDataStore(name = "user_prefs")
 
@@ -34,6 +37,8 @@ class DataStoreManager(private val context: Context) {
         intPreferencesKey("level_${n}_${k}")
     private fun unlockKey(nama: String, kelas: String, materi: Int) =
         intPreferencesKey("unlocked_${nama}_${kelas}_materi$materi")
+    private fun timestampKey(n: String, k: String, materi: Int) =
+        stringPreferencesKey("timestamp_${n}_${k}_materi$materi")
 
 
     // ──────────────── Save & Get Progress ────────────────
@@ -41,7 +46,7 @@ class DataStoreManager(private val context: Context) {
     suspend fun saveProgress(nama: String, kelas: String, progress: Int) {
         val key = intPreferencesKey("progress_${nama}_${kelas}")
         context.dataStore.edit { it[key] = progress }
-        println("✅ Progress disimpan: $progress untuk $nama - $kelas")
+        println("Progress disimpan: $progress untuk $nama - $kelas")
     }
 
     suspend fun getProgress(nama: String, kelas: String): Int {
@@ -81,7 +86,7 @@ class DataStoreManager(private val context: Context) {
         context.dataStore.edit {
             it[levelKey(nama, kelas)] = level
         }
-        println("✅ Level disimpan: $level untuk $nama - $kelas")
+        println(" Level disimpan: $level untuk $nama - $kelas")
     }
 
 
@@ -107,19 +112,18 @@ class DataStoreManager(private val context: Context) {
 
         targetLevel?.let {
             setLevel(nama, kelas, it)
-            println("✅ Naik level ke $it (tipe: $tipe, materi: $materiKe)")
+            println("Naik level ke $it (tipe: $tipe, materi: $materiKe)")
         }
     }
-
-
-
 
 
 
     // ──────────────── History Quiz per Materi ────────────────
     suspend fun saveQuizHistory(nama: String, kelas: String, materiKe: Int, skor: Int, waktu: Int) {
         val key = historyPerMateriKey(nama, kelas, materiKe)
-        val newItem = "$skor|$waktu"
+        // Gunakan Date dan SimpleDateFormat untuk timestamp
+        val currentTimestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+        val newItem = "$skor|$waktu|$currentTimestamp"
         context.dataStore.edit { prefs ->
             val set = prefs[key]?.toMutableSet() ?: mutableSetOf()
             if (!set.contains(newItem)) {
@@ -128,25 +132,17 @@ class DataStoreManager(private val context: Context) {
             }
         }
     }
-    suspend fun getQuizHistoryForMateri(nama: String, kelas: String, materiKe: Int): List<Pair<Int, Int>> {
+    suspend fun getQuizHistoryForMateri(nama: String, kelas: String, materiKe: Int): List<Triple<Int, Int, String>> {
         val prefs = context.dataStore.data.first()
         return prefs[historyPerMateriKey(nama, kelas, materiKe)]?.mapNotNull {
             val parts = it.split('|')
             val skor = parts.getOrNull(0)?.toIntOrNull()
             val waktu = parts.getOrNull(1)?.toIntOrNull()
-            if (skor != null && waktu != null) skor to waktu else null
-        } ?: emptyList()
+            val timestamp = parts.getOrNull(2)
+            if (skor != null && waktu != null && timestamp != null) Triple(skor, waktu, timestamp) else null
+        }?.sortedByDescending { it.third } // Opsional: Urutkan berdasarkan timestamp terbaru (string)
+            ?: emptyList()
     }
-    suspend fun getQuizHistory(nama: String, kelas: String): List<Pair<Int, Int>> {
-        val prefs = context.dataStore.data.first()
-        return prefs[historyKey(nama, kelas)]?.mapNotNull {
-            val parts = it.split('|')
-            val skor = parts.getOrNull(0)?.toIntOrNull()
-            val waktu = parts.getOrNull(1)?.toIntOrNull()
-            if (skor != null && waktu != null) skor to waktu else null
-        } ?: emptyList()
-    }
-
     // ──────────────── Info User (Email & Sekolah) ────────────────
     suspend fun saveUserInfo(nama: String, kelas: String, email: String, sekolah: String) {
         context.dataStore.edit { prefs ->

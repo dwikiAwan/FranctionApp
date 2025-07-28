@@ -32,7 +32,7 @@ fun MenuButton(iconId: Int, text: String, textColor: Color, onClick: () -> Unit 
     val isPressed = remember { mutableStateOf(false) }
 
     val scale = animateFloatAsState(
-        targetValue = if (isPressed.value) 0.30f else 1f
+        targetValue = if (isPressed.value) 0.9f else 1f // Adjusted scale for better visual feedback
     ).value
 
     val rotationY = animateFloatAsState(
@@ -48,8 +48,8 @@ fun MenuButton(iconId: Int, text: String, textColor: Color, onClick: () -> Unit 
     Box(
         modifier = Modifier
             .width(180.dp)
-            .background(highlightColor, shape = RoundedCornerShape(16.dp))
-            .padding(10.dp),
+            .padding(2.dp)
+            .background(highlightColor, shape = RoundedCornerShape(16.dp)),
         contentAlignment = Alignment.Center
     ) {
         Box(
@@ -78,11 +78,11 @@ fun MenuButton(iconId: Int, text: String, textColor: Color, onClick: () -> Unit 
                 Image(
                     painter = painterResource(id = iconId),
                     contentDescription = text,
-                    modifier = Modifier.size(130.dp)
+                    modifier = Modifier.size(120.dp)
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
                     text = text,
                     color = textColor,
                     fontWeight = FontWeight.Bold,
@@ -92,7 +92,3 @@ fun MenuButton(iconId: Int, text: String, textColor: Color, onClick: () -> Unit 
         }
     }
 }
-
-
-
-

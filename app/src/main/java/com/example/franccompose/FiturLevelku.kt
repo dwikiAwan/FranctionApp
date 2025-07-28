@@ -8,12 +8,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -61,12 +65,13 @@ fun LevelkuScreen(
             .fillMaxSize()
             .background(Color(0xFF8ED8F8))
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()
+            .windowInsetsPadding(WindowInsets.systemBars)) {
 
             // ===== HEADER =====
             Column(
                 modifier = Modifier
-                    .weight(0.2f)
+                    .weight(0.1f)
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -94,7 +99,7 @@ fun LevelkuScreen(
             // ===== KONTEN =====
             Box(
                 modifier = Modifier
-                    .weight(0.8f)
+                    .weight(0.9f)
                     .fillMaxWidth()
                     .background(
                         color = Color.White,
@@ -108,7 +113,6 @@ fun LevelkuScreen(
                         .padding(30.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Bagian atas TIDAK scroll
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -130,7 +134,7 @@ fun LevelkuScreen(
 
                     Text(
                         text = "Riwayat nilai anda",
-                        fontSize = 18.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.DarkGray
                     )
@@ -180,14 +184,16 @@ fun LevelkuScreen(
 
         // ===== TOMBOL KEMBALI =====
         Box(
+
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .shadow(30.dp)
                 .background(Color.White)
-                .padding(16.dp)
-        ) {
-
+                .padding(10.dp)
+                .windowInsetsPadding(WindowInsets.navigationBars)
+        )
+            {
 
 
             Button(

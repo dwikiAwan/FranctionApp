@@ -13,7 +13,6 @@ import com.example.franccompose.R
 import com.example.franccompose.fiturmulaibelajar.datastore.DataStoreManager
 import kotlinx.coroutines.launch
 
-// Model data materi
 data class Materi(
     val id: Int,
     val title: String,
@@ -55,7 +54,7 @@ class MateriViewModel(application: Application) : AndroidViewModel(application) 
 
 
     fun unlockNext(materiId: Int) {
-        if (currentProgress == materiId) { // ❗ hanya naik urut
+        if (currentProgress == materiId) {
             currentProgress = materiId + 1
             viewModelScope.launch {
                 dataStore.saveProgress(namaUser, kelasUser, currentProgress)
@@ -67,12 +66,12 @@ class MateriViewModel(application: Application) : AndroidViewModel(application) 
     private fun updateMateriList() {
         materiList.clear()
         val allMateri = listOf(
-            "Materi 1"      to "Pengenalan Pecahan",           // id 1
-            "Materi 2"      to "Membandingkan dan Mengurutkan",// id 2
-            "Uji Tingkat 1" to "Evaluasi Materi 1 dan 2", // id 3
-            "Materi 3"      to "Penjumlahan Pecahan",          // id 4
-            "Materi 4"      to "Pengurangan Pecahan",          // id 5
-            "Uji Tingkat 2" to "Evaluasi Materi 3 dan 4"  // id 6
+            "Materi 1"      to "Pengenalan Pecahan",           //id = 1
+            "Materi 2"      to "Membandingkan dan Mengurutkan Pecahan",//id = 2
+            "Uji Tingkat 1" to "Evaluasi Materi 1 dan 2",      //id = 3
+            "Materi 3"      to "Penjumlahan Pecahan",          //id = 4
+            "Materi 4"      to "Pengurangan Pecahan",          //id = 5
+            "Uji Tingkat 2" to "Evaluasi Materi 3 dan 4"       //id =6
         )
         allMateri.forEachIndexed { index, (title, subtitle) ->
             val id = index + 1
@@ -101,7 +100,7 @@ class MateriViewModel(application: Application) : AndroidViewModel(application) 
     fun selesaiQuiz(nama: String, kelas: String, materiKe: Int) {
         viewModelScope.launch {
             val currentProgress = dataStore.getProgress(nama, kelas)
-            if (materiKe == currentProgress) { // ❗ hanya naik jika quiz saat ini sesuai progress
+            if (materiKe == currentProgress) {
                 val nextProgress = currentProgress + 1
                 dataStore.saveProgress(nama, kelas, nextProgress)
                 this@MateriViewModel.currentProgress = nextProgress

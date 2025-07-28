@@ -51,6 +51,7 @@ class UjiTingkatViewModel : ViewModel() {
         }
         loadUjiTingkatSoal(soal)
     }
+
     fun loadUjiTingkatSoal(soal: List<UjiQuestion>) {
         _questions.value = soal
         _currentQuestionIndex.value = 0
@@ -58,7 +59,6 @@ class UjiTingkatViewModel : ViewModel() {
         _score.value = 0
         poinPerSoal = if (soal.isNotEmpty()) 100 / soal.size else 0
     }
-
 
 
     // Simpan jawaban
@@ -98,27 +98,44 @@ class UjiTingkatViewModel : ViewModel() {
 
     fun isLastQuestion(): Boolean = _currentQuestionIndex.value == questions.value.lastIndex
 
-    fun simpanSkorUjiTingkat(waktu: Int, onSaved: (Int) -> Unit) {
+    fun hitungSkor(): Int {
+        val soal = questions.value
+        var skor = 0
+        for ((index, question) in soal.withIndex()) {
+            val selected = selectedAnswers[index]
+            if (selected == question.correctAnswerIndex) {
+                skor += poinPerSoal
+            }
+        }
+        return skor
+    }
+
+
+    fun simpanSkorUjiTingkat(skor: Int, waktu: Int, materiKe: Int, onSaved: (Int) -> Unit) {
         viewModelScope.launch {
             dataStoreManager?.let { dataStore ->
                 val user = dataStore.getLastUser()
                 user?.let { (nama, kelas) ->
-                    val skor = _score.value
-                    val materiKe = 3 // khusus Uji Tingkat 1
 
-                    // Simpan nilai & waktu
                     dataStore.saveScore(nama, kelas, materiKe, skor)
                     dataStore.saveQuizHistory(nama, kelas, materiKe, skor, waktu)
 
-                    if (skor >= 70) {
-                        // 🔼 Naik Level
+                    if (skor >= 60) {
                         val currentLevel = dataStore.getFinalLevel(nama, kelas)
-                        val nextLevel = (currentLevel + 1).coerceAtMost(100)
-                        dataStore.setLevel(nama, kelas, nextLevel)
-                        dataStore.unlockNextMateri(4)
-                        val currentProgress = dataStore.getProgress(nama, kelas)
-                        if (currentProgress == 3) {
-                            dataStore.saveProgress(nama, kelas, 3)
+                        when (materiKe) {
+                            3 -> {
+                                if (currentLevel < 4) {
+                                    dataStore.saveProgress(nama, kelas, 4)
+                                    dataStore.upgradeLevel(nama, kelas, 3, "ujian")
+                                }
+                            }
+
+                            6 -> {
+                                if (currentLevel < 7) {
+                                    dataStore.saveProgress(nama, kelas, 7)
+                                    dataStore.upgradeLevel(nama, kelas, 6, "ujian")
+                                }
+                            }
                         }
                     }
 
@@ -127,6 +144,7 @@ class UjiTingkatViewModel : ViewModel() {
             }
         }
     }
-
-
 }
+
+
+

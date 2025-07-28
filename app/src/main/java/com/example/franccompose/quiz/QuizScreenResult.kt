@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -96,7 +99,8 @@ fun QuizResultScreen(score: Int, onBackToHome: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFFAFAFA))
-            .padding(24.dp),
+            .padding(24.dp)
+            .windowInsetsPadding(WindowInsets.systemBars),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -128,7 +132,8 @@ fun BerhasilResultScreen(
                 .fillMaxWidth(0.85f)
                 .heightIn(min = 450.dp)
                 .background(Color.White, RoundedCornerShape(30.dp))
-                .padding(horizontal = 24.dp, vertical = 20.dp),
+                .padding(horizontal = 24.dp, vertical = 20.dp)
+                .windowInsetsPadding(WindowInsets.systemBars),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
@@ -140,7 +145,7 @@ fun BerhasilResultScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text("SELAMAT", fontWeight = FontWeight.Bold, fontSize = 24.sp, color = Color(0xFF2C7D17))
+            Text("SELAMAT", fontWeight = FontWeight.Bold, fontSize = 30.sp, color = Color(0xFF2C7D17))
             Text("Anda BERHASIL", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Color(0xFF0B46A7))
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -152,7 +157,7 @@ fun BerhasilResultScreen(
                     }
                     append(" ini")
                 },
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 color = Color(0xFF0B46A7)
             )
 
@@ -171,8 +176,8 @@ fun BerhasilResultScreen(
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "Waktu pengerjaan: ${formatTime(elapsedTime)}",
-                fontSize = 20.sp,
-                color = Color.Gray
+                fontSize = 18.sp,
+                color = Color.Black
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -182,6 +187,7 @@ fun BerhasilResultScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.systemBars)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -227,6 +233,7 @@ fun GagalResultScreen(
     ) {
         Column(
             modifier = Modifier
+                .windowInsetsPadding(WindowInsets.systemBars)
                 .align(Alignment.Center)
                 .fillMaxWidth(0.85f)
                 .heightIn(min = 450.dp)
@@ -243,7 +250,7 @@ fun GagalResultScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text("MAAF", fontWeight = FontWeight.Bold, fontSize = 24.sp, color = Color(0xFFDA0B0B))
+            Text("MAAF", fontWeight = FontWeight.Bold, fontSize = 30.sp, color = Color(0xFFDA0B0B))
             Text("Anda GAGAL", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Color(0xFFFF9800))
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -255,7 +262,7 @@ fun GagalResultScreen(
                     }
                     append(" ini")
                 },
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 color = Color(0xFFFF9800)
             )
 
@@ -268,14 +275,14 @@ fun GagalResultScreen(
                     .border(1.dp, Color(0xFFDA0B0B), RoundedCornerShape(20.dp))
                     .padding(horizontal = 40.dp, vertical = 24.dp)
             ) {
-                Text("$score", fontSize = 36.sp, fontWeight = FontWeight.Bold, color = Color(0xFFDA0B0B))
+                Text("$score", fontSize =36.sp, fontWeight = FontWeight.Bold, color = Color(0xFFDA0B0B))
             }
 
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "Waktu pengerjaan: ${formatTime(elapsedTime)}",
-                fontSize = 20.sp,
-                color = Color.Gray
+                fontSize = 18.sp,
+                color = Color.Black
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -285,6 +292,7 @@ fun GagalResultScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.systemBars)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

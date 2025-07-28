@@ -1,17 +1,23 @@
 package com.example.franccompose.materipecahan.ujitingkat1
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -27,8 +33,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,7 +56,11 @@ fun UjiTingkat1Screen(
     onQuizFinished: (Int) -> Unit,
     materiKe: Int
 ) {
-    // Muat soal hanya sekali saat composable pertama kali muncul
+    val context = LocalContext.current
+    BackHandler(enabled = true) {
+        Toast.makeText(context, "Selesaikan Ujian terlebih dahulu!", Toast.LENGTH_SHORT).show()
+    }
+
     LaunchedEffect(Unit) {
         viewModel.loadUjiTingkat(UjiTingkatViewModel.UjiLevel.SATU)
         viewModel.setDataStore(dataStoreManager)
@@ -62,7 +76,7 @@ fun UjiTingkat1Screen(
     var showStartPopup by remember { mutableStateOf(true) }
 
     if (showStartPopup) {
-        CardPopupAwalUjian2(
+        CardPopupAwalUjian1(
             onStart = {
                 showStartPopup = false
             }
@@ -71,7 +85,9 @@ fun UjiTingkat1Screen(
     }
 
     if (questions.isEmpty()) {
-        Text("Soal belum dimuat", modifier = Modifier.padding(16.dp))
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Memuat soal...", fontSize = 16.sp)
+        }
         return
     }
 
@@ -81,16 +97,13 @@ fun UjiTingkat1Screen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
-        // HEADER diperluas ke bawah dan rounded di bawah
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    color = Color(0xFF5D4037),
-                    shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
-                )
-                .padding(top = 48.dp, bottom = 32.dp),
+                .background(color = Color(0xFF5D4037))
+                .padding(top = 16.dp, bottom = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -98,24 +111,23 @@ fun UjiTingkat1Screen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Uji Tingkat 1",
-                    fontSize = 20.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFFFC107)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("💡", fontSize = 24.sp)
+                Text("💡", fontSize = 30.sp)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Timer di tengah (center)
             Box(
                 modifier = Modifier
                     .border(1.dp, Color.White, shape = RoundedCornerShape(12.dp))
                     .padding(horizontal = 12.dp, vertical = 6.dp)
             ) {
                 TimerComponent(
-                    totalSeconds = 1800, // 1 jam
+                    totalSeconds = 1800,
                     navController = navController,
                     viewModel = viewModel,
                     materiKe = materiKe
@@ -123,7 +135,8 @@ fun UjiTingkat1Screen(
             }
         }
 
-        // KONTEN UTAMA
+        // MAIN CONTENT
+        // MAIN CONTENT
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -132,22 +145,41 @@ fun UjiTingkat1Screen(
         ) {
             Spacer(modifier = Modifier.height(30.dp))
 
-            // Pertanyaan
+            // ==== Pertanyaan ====
             Box(
                 modifier = Modifier
                     .weight(0.03f)
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
             ) {
-                Text(
-                    text = "${currentIndex + 1}. ${currentQuestion.question}",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp,
-                    color = Color.Black
-                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    if (currentQuestion.customQuestionContent != null) {
+                        currentQuestion.customQuestionContent.invoke(currentIndex)
+                    } else {
+                        Text(
+                            text = "${currentIndex + 1}. ${currentQuestion.question}",
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 18.sp,
+                            color = Color.Black
+                        )
+                    }
+
+                    currentQuestion.imageResId?.let { resId ->
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Image(
+                            painter = painterResource(id = resId),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(180.dp)
+                                .clip(RoundedCornerShape(12.dp)),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                }
             }
 
-            // Pilihan jawaban
+            // ==== Pilihan Jawaban ====
             Box(
                 modifier = Modifier
                     .weight(0.07f)
@@ -160,37 +192,68 @@ fun UjiTingkat1Screen(
                         .border(1.dp, Color.Black, RoundedCornerShape(20.dp))
                         .padding(16.dp)
                 ) {
-                    currentQuestion.options.forEachIndexed { index, option ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                                .selectable(
+                    val optionsText = currentQuestion.options
+                    val optionsComposable = currentQuestion.optionContents
+
+                    if (!optionsText.isNullOrEmpty()) {
+                        // Jawaban berupa teks
+                        optionsText.forEachIndexed { index, option ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                                    .selectable(
+                                        selected = selectedOption.value == index,
+                                        onClick = {
+                                            selectedOption.value = index
+                                            viewModel.submitAnswer(index)
+                                        }
+                                    )
+                            ) {
+                                RadioButton(
                                     selected = selectedOption.value == index,
-                                    onClick = {
-                                        selectedOption.value = index
-                                        viewModel.submitAnswer(index)
-                                    }
+                                    onClick = null
                                 )
-                        ) {
-                            RadioButton(
-                                selected = selectedOption.value == index,
-                                onClick = null
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(option, fontSize = 14.sp, color = Color.Black)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(option, fontSize = 14.sp, color = Color.Black)
+                            }
+                        }
+                    } else if (!optionsComposable.isNullOrEmpty()) {
+                        // Jawaban berupa composable (misal PecahanBiasa)
+                        optionsComposable.forEachIndexed { index, content ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                                    .selectable(
+                                        selected = selectedOption.value == index,
+                                        onClick = {
+                                            selectedOption.value = index
+                                            viewModel.submitAnswer(index)
+                                        }
+                                    )
+                            ) {
+                                RadioButton(
+                                    selected = selectedOption.value == index,
+                                    onClick = null
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                content()
+                            }
                         }
                     }
                 }
             }
         }
 
-        // Navigasi bawah
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(80.dp)
+                .windowInsetsPadding(WindowInsets.systemBars)
         ) {
             Button(
                 onClick = { viewModel.prevQuestion() },
@@ -209,12 +272,21 @@ fun UjiTingkat1Screen(
             Button(
                 onClick = {
                     if (viewModel.isLastQuestion()) {
-                        viewModel.simpanSkorUjiTingkat(waktu = viewModel.timeLeft) { skorFinal ->
-                            val elapsed = 1800 - viewModel.timeLeft
-                            navController.navigate("hasiluji1/$skorFinal/$elapsed/3") {
+                        val durasi = 1800 - viewModel.timeLeft
+                        val skorFinal = viewModel.hitungSkor()
+
+                        viewModel.simpanSkorUjiTingkat(
+                            skor = skorFinal,
+                            waktu = durasi,
+                            materiKe = 3
+                        ) {
+                            println("Skor Uji Tingkat disimpan & level dinaikkan")
+                            navController.navigate("hasiluji1/$skorFinal/$durasi/$materiKe") {
                                 popUpTo("ujitingkat1") { inclusive = true }
                             }
                         }
+
+
                     } else {
                         viewModel.nextQuestion()
                     }
@@ -225,7 +297,8 @@ fun UjiTingkat1Screen(
                 shape = RectangleShape,
                 enabled = selectedOption.value != -1,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFBC02D).copy(alpha = if (selectedOption.value != -1) 1f else 0.5f)
+                    containerColor = Color(0xFFFBC02D),
+                    disabledContainerColor = Color(0xFF6F6F6E).copy(alpha = 0.8f)
                 )
             ) {
                 Text(
@@ -239,13 +312,12 @@ fun UjiTingkat1Screen(
     }
 }
 
-
 @Composable
 fun TimerComponent(
-    totalSeconds: Int = 1800, // 1 jam
+    totalSeconds: Int = 1800,
     navController: NavController,
     viewModel: UjiTingkatViewModel,
-    materiKe: Int
+    materiKe: Int // Receive materiKe here
 ) {
     var timeLeft by remember { mutableStateOf(totalSeconds) }
 
@@ -255,35 +327,30 @@ fun TimerComponent(
             timeLeft--
             viewModel.timeLeft = timeLeft
         }
-
-        // Arahkan ke hasil jika waktu habis
-        if (timeLeft == 0) {
-            val elapsed = totalSeconds
-            viewModel.simpanSkorUjiTingkat(waktu = elapsed) { skorFinal ->
-                navController.navigate("hasiluji1/$skorFinal/$elapsed/$materiKe")
-            }
-        }
-
     }
 
+    val hours = timeLeft / 3600
+    val minutes = (timeLeft % 3600) / 60
+    val seconds = timeLeft % 60
     val waktuFormat = remember(timeLeft) {
-        String.format("%02d:%02d:%02d", timeLeft / 3600, (timeLeft % 3600) / 60, timeLeft % 60)
+        String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
     Text(
         text = waktuFormat,
         color = Color.White,
         fontWeight = FontWeight.Bold,
-        fontSize = 14.sp
+        fontSize = 18.sp
     )
 }
+
 @Composable
-fun CardPopupAwalUjian2(
+fun CardPopupAwalUjian1(
     onStart: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f))
+            .background(Color(0xFF5D4037))
             .padding(32.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -307,19 +374,19 @@ fun CardPopupAwalUjian2(
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "Pada Uji Tingkat 1 ini kamu akan di uji pada materi\n1. Pengenalan Pecahan\n2. Membandingkan dan Mengurutkan Pecahan",
+                text = "Pada Uji Tingkat 1 ini kamu akan diuji pada materi\n1. Pengenalan Pecahan\n2. Membandingkan dan Mengurutkan Pecahan",
                 fontSize = 16.sp,
                 color = Color.Black
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                "🔥 Semangat ya, kami yakin kamu bisa!",
+                "🔥 Semangat ya, kami yakin kamu bisa !",
                 fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color(0xFF1976D2), textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = onStart,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF1A09)),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Mulai Ujian", color = Color.White, fontSize = 16.sp)

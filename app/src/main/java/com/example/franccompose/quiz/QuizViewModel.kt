@@ -100,39 +100,6 @@ class QuizViewModel : ViewModel() {
         }
     }
 
-    fun simpanSkorUjiTingkat(
-        dataStore: DataStoreManager,
-        tingkatKe: Int,
-        waktu: Int,
-        onSaved: (Int) -> Unit
-    ) {
-        viewModelScope.launch {
-            val user = dataStore.getLastUser()
-            user?.let { (nama, kelas) ->
-                val skor = _score.value
-
-                // Jika lulus baru progress naik
-                if (skor >= 70) {
-                    val progress = dataStore.getProgress(nama, kelas)
-                    val updated = maxOf(progress, when (tingkatKe) {
-                        1 -> 4 // Setelah Uji 1, buka Materi 3
-                        2 -> 6 // Setelah Uji 2, bisa dikembangkan
-                        else -> progress
-                    })
-                    dataStore.saveProgress(nama, kelas, updated)
-                }
-
-                // Simpan skor ke rapot
-                dataStore.saveScore(nama, kelas, tingkatKe, skor)
-                dataStore.saveQuizHistory(nama, kelas, tingkatKe, skor, waktu)
-
-                onSaved(skor)
-            }
-        }
-    }
-
-
-
 
 
 }

@@ -1,17 +1,22 @@
 package com.example.franccompose.materipecahan.ujitingkat2
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -29,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,8 +50,12 @@ fun UjiTingkat2Screen(
     navController: NavController,
     dataStoreManager: DataStoreManager,
     onQuizFinished: (Int) -> Unit,
-    materiKe: Int,
+    materiKe: Int
 ) {
+    val context = LocalContext.current
+    BackHandler(enabled = true) {
+        Toast.makeText(context, "Selesaikan Ujian terlebih dahulu!", Toast.LENGTH_SHORT).show()
+    }
     // Muat soal hanya sekali saat composable pertama kali muncul
     LaunchedEffect(Unit) {
         viewModel.loadUjiTingkat(UjiTingkatViewModel.UjiLevel.DUA)
@@ -62,7 +72,7 @@ fun UjiTingkat2Screen(
     var showStartPopup by remember { mutableStateOf(true) }
 
     if (showStartPopup) {
-        CardPopupAwalUjian1(
+        CardPopupAwalUjian2(
             onStart = {
                 showStartPopup = false
             }
@@ -77,21 +87,22 @@ fun UjiTingkat2Screen(
 
     val currentQuestion = questions[currentIndex]
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
-        // HEADER diperluas ke bawah dan rounded di bawah
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
                     color = Color(0xFF5D4037),
-                    shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+//                    shape = RoundedCornerShape(bottomStart = 50.dp, bottomEnd = 50.dp,topStart = 50.dp, topEnd = 50.dp)
                 )
-                .padding(top = 48.dp, bottom = 32.dp),
+                .padding(top = 16.dp, bottom = 32.dp) // Adjusted top padding slightly
+            ,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -99,12 +110,12 @@ fun UjiTingkat2Screen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Uji Tingkat 2",
-                    fontSize = 20.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFFFC107)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("💡", fontSize = 24.sp)
+                Text("💡", fontSize = 30.sp)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -116,7 +127,7 @@ fun UjiTingkat2Screen(
                     .padding(horizontal = 12.dp, vertical = 6.dp)
             ) {
                 TimerComponent(
-                    totalSeconds = 1800, // 1 jam
+                    totalSeconds = 1800, // 30 minutes (since 10 soal within 30 menit from popup)
                     navController = navController,
                     viewModel = viewModel,
                     materiKe = materiKe
@@ -127,28 +138,32 @@ fun UjiTingkat2Screen(
         // KONTEN UTAMA
         Column(
             modifier = Modifier
-                .weight(1f)
+                .weight(1f) // This makes it take all remaining vertical space
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp) // Keep internal padding
         ) {
             Spacer(modifier = Modifier.height(30.dp))
 
             // Pertanyaan
+            // Tampilkan pertanyaan
             Box(
                 modifier = Modifier
                     .weight(0.03f)
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
             ) {
-                Text(
-                    text = "${currentIndex + 1}. ${currentQuestion.question}",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp,
-                    color = Color.Black
-                )
+                if (currentQuestion.customQuestionContent != null) {
+                    currentQuestion.customQuestionContent.invoke(currentIndex)
+                } else {
+                    Text(
+                        text = "${currentIndex + 1}. ${currentQuestion.question}",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp,
+                        color = Color.Black
+                    )
+                }
             }
 
-            // Pilihan jawaban
             Box(
                 modifier = Modifier
                     .weight(0.07f)
@@ -161,37 +176,69 @@ fun UjiTingkat2Screen(
                         .border(1.dp, Color.Black, RoundedCornerShape(20.dp))
                         .padding(16.dp)
                 ) {
-                    currentQuestion.options.forEachIndexed { index, option ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                                .selectable(
+                    val optionsText = currentQuestion.options
+                    val optionsComposable = currentQuestion.optionContents
+
+                    // Jika pakai opsi teks biasa
+                    if (!optionsText.isNullOrEmpty()) {
+                        optionsText.forEachIndexed { index, option ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                                    .selectable(
+                                        selected = selectedOption.value == index,
+                                        onClick = {
+                                            selectedOption.value = index
+                                            viewModel.submitAnswer(index)
+                                        }
+                                    )
+                            ) {
+                                RadioButton(
                                     selected = selectedOption.value == index,
-                                    onClick = {
-                                        selectedOption.value = index
-                                        viewModel.submitAnswer(index)
-                                    }
+                                    onClick = null
                                 )
-                        ) {
-                            RadioButton(
-                                selected = selectedOption.value == index,
-                                onClick = null
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(option, fontSize = 14.sp, color = Color.Black)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(option, fontSize = 14.sp, color = Color.Black)
+                            }
+                        }
+                    }
+                    // Jika pakai opsi Composable (contohnya PecahanBiasa)
+                    else if (!optionsComposable.isNullOrEmpty()) {
+                        optionsComposable.forEachIndexed { index, content ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                                    .selectable(
+                                        selected = selectedOption.value == index,
+                                        onClick = {
+                                            selectedOption.value = index
+                                            viewModel.submitAnswer(index)
+                                        }
+                                    )
+                            ) {
+                                RadioButton(
+                                    selected = selectedOption.value == index,
+                                    onClick = null
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                content()
+                            }
                         }
                     }
                 }
             }
         }
 
-        // Navigasi bawah
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(80.dp)
+                .windowInsetsPadding(WindowInsets.systemBars)
+
         ) {
             Button(
                 onClick = { viewModel.prevQuestion() },
@@ -210,11 +257,20 @@ fun UjiTingkat2Screen(
             Button(
                 onClick = {
                     if (viewModel.isLastQuestion()) {
-                        viewModel.simpanSkorUjiTingkat(waktu = viewModel.timeLeft) { skorFinal ->
-                            navController.navigate("hasiluji2/$skorFinal/${1800 - viewModel.timeLeft}/$materiKe") {
+                        val durasi = 1800 - viewModel.timeLeft
+                        val skorFinal = viewModel.hitungSkor()
+
+                        viewModel.simpanSkorUjiTingkat(
+                            skor = skorFinal,
+                            waktu = durasi,
+                            materiKe = materiKe
+                        ) {
+                            navController.navigate("hasiluji2/$skorFinal/$durasi/$materiKe") {
                                 popUpTo("ujitingkat2") { inclusive = true }
                             }
                         }
+
+
                     } else {
                         viewModel.nextQuestion()
                     }
@@ -225,7 +281,8 @@ fun UjiTingkat2Screen(
                 shape = RectangleShape,
                 enabled = selectedOption.value != -1,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFBC02D).copy(alpha = if (selectedOption.value != -1) 1f else 0.5f)
+                    containerColor = Color(0xFFFBC02D), // This is for the enabled state (100% opacity)
+                    disabledContainerColor = Color(0xFF6F6F6E).copy(alpha = 0.8f) // <-- Set 80% opacity for disabled state
                 )
             ) {
                 Text(
@@ -238,7 +295,6 @@ fun UjiTingkat2Screen(
         }
     }
 }
-
 
 @Composable
 fun TimerComponent(
@@ -256,14 +312,20 @@ fun TimerComponent(
             viewModel.timeLeft = timeLeft
         }
 
-        // Arahkan ke hasil jika waktu habis
         if (timeLeft == 0) {
             val elapsed = totalSeconds
-            viewModel.simpanSkorUjiTingkat(waktu = elapsed) { skorFinal ->
-                navController.navigate("ujitingkat2/$skorFinal/$elapsed/$materiKe") {
+            val skorFinal = viewModel.score.value // atau viewModel.hitungSkor() jika kamu punya fungsi itu
+
+            viewModel.simpanSkorUjiTingkat(
+                skor = skorFinal,
+                waktu = elapsed,
+                materiKe = materiKe
+            ) {
+                navController.navigate("hasiluji2/$skorFinal/$elapsed/$materiKe") {
                     popUpTo("ujitingkat2") { inclusive = true }
                 }
             }
+
         }
 
     }
@@ -275,19 +337,17 @@ fun TimerComponent(
         text = waktuFormat,
         color = Color.White,
         fontWeight = FontWeight.Bold,
-        fontSize = 14.sp
+        fontSize = 18.sp
     )
-
-
 }
 @Composable
-fun CardPopupAwalUjian1(
+fun CardPopupAwalUjian2(
     onStart: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f))
+            .background(Color(0xFF5D4037))
             .padding(32.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -317,13 +377,13 @@ fun CardPopupAwalUjian1(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                "🔥 Semangat ya, kami yakin kamu bisa!",
+                "🔥 Semangat ya, kami yakin kamu bisa !",
                 fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color(0xFF1976D2), textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = onStart,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF1A09)),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Mulai Ujian", color = Color.White, fontSize = 16.sp)
@@ -331,4 +391,3 @@ fun CardPopupAwalUjian1(
         }
     }
 }
-

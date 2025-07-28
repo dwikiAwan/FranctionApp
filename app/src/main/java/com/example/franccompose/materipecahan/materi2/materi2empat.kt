@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -29,9 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -45,6 +51,11 @@ fun BandingUrut4Screen(
     subtitle: String = "Membandingkan dan Mengurutkan Pecahan",
     onNextClick: () -> Unit = {}
 ) {
+    val merah = Color(0xFFEB5757)
+    val hijau = Color(0xFF27AE60)
+    val ungu = Color(0xFF9B51E0)
+    val biru = Color(0xFF2D9CDB)
+    val orange = Color(0xFFF2994A)
     val scrollState = rememberScrollState()
     val isScrollAtBottom = remember {
         derivedStateOf {
@@ -56,6 +67,7 @@ fun BandingUrut4Screen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF4CAF50))
+            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         Column(
             modifier = Modifier
@@ -65,22 +77,20 @@ fun BandingUrut4Screen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 24.dp, top = 50.dp, end = 24.dp, bottom = 10.dp),
+                    .padding(start = 24.dp, top = 20.dp, end = 24.dp, bottom = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = title,
-                        fontSize = 20.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
                     Text(
                         text = subtitle,
-                        fontSize = 24.sp,
+                        fontSize = 20.sp,
                         color = Color.White
                     )
                 }
@@ -101,281 +111,194 @@ fun BandingUrut4Screen(
                 Column(
                     modifier = Modifier
                         .verticalScroll(scrollState)
-                        .padding(24.dp)
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Membandingkan pecahan ",
-                        fontSize = 18.sp,
+                        text = "Mengurutkan Pecahan berbeda penyebut",
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Blue
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Membandingkan pecahan adalah proses menentukan pecahan mana yang lebih besar, lebih kecil, atau sama dengan pecahan lainnya.",
-                        fontSize = 16.sp
-                    )
-                    Text(
-                        text = "Untuk membandingkan pecahan, biasanya penyebutnya disamakan terlebih dahulu agar lebih mudah dibandingkan, kemudian pembilangnya dibandingkan.",
-                        fontSize = 16.sp
+                        color = Color(0xFF219653)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Text("Contoh 1:", fontWeight = FontWeight.Bold)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        PecahanBiasa(5, 12)
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text("...")
-                        Spacer(modifier = Modifier.width(12.dp))
-                        PecahanBiasa(7, 12)
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text("Contoh 2:", fontWeight = FontWeight.Bold)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        PecahanBiasa(5, 7)
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text("...")
-                        Spacer(modifier = Modifier.width(12.dp))
-                        PecahanBiasa(9, 13)
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Text("Dengan melihat kedua contoh di atas kita dapat membandingkan pecahan dengan tanda-tanda:", fontSize = 16.sp)
-                    Text("• < (Lebih Kecil dari)")
-                    Text("• > (Lebih Besar dari)")
-                    Text("• = (Sama Dengan)")
-
-                    Spacer(modifier = Modifier.height(24.dp))
                     Text(
-                        text = "Lihat apakah kedua pecahan memiliki penyebut yang sama atau tidak. Itu merupakan langkah pertama dalam membandingkan pecahan.",
-                        fontSize = 16.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Penyebut adalah bilangan di bagian bawah pecahan, sedangkan pembilang adalah bilangan di bagian atas.",
-                        fontSize = 16.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Misalnya, pecahan ", fontSize = 16.sp)
-                        PecahanBiasa(5, 7)
-                        Text(" dan ")
-                        PecahanBiasa(9, 13)
-                    }
-
-                    Text(
-                        text = "tidak memiliki penyebut yang sama, karena 7 tidak sama dengan 13.",
-                        fontSize = 16.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = "Jadi, Anda harus melakukan beberapa langkah untuk dapat membandingkan kedua pecahan tersebut.",
-                        fontSize = 16.sp
-                    )
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Text("Kasus Pertama", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        PecahanBiasa(5, 12)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("dan")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        PecahanBiasa(7, 12)
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Jika penyebut kedua pecahan sudah sama, yang harus dilakukan hanyalah melihat pembilang untuk mengetahui pecahan mana yang lebih besar.",
-                        fontSize = 16.sp
-                    )
-                    Text(
-                        text = "Misalnya, saat membandingkan pecahan 5/12 dan 7/12, 7 lebih besar daripada 5.",
-                        fontSize = 16.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Hasilnya: ")
-                        PecahanBiasa(5, 12)
-                        Text(" < ")
-                        PecahanBiasa(7, 12)
-                        Text(" artinya 5 lebih kecil dari 7")
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        PecahanBiasa(7, 12)
-                        Text(" > ")
-                        PecahanBiasa(5, 12)
-                        Text(" artinya 7 lebih besar dari 5")
-                    }
-
-                    Spacer(modifier = Modifier.height(32.dp))
-                    Text("Kasus Kedua", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        PecahanBiasa(5, 7)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("dan")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        PecahanBiasa(9, 13)
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Jika penyebut kedua pecahan berbeda, temukan penyebut bersama.",
-                        fontSize = 16.sp
-                    )
-                    Text(
-                        text = "Untuk dapat membandingkan pecahan, Anda harus menemukan penyebut bersama agar dapat diketahui pecahan mana yang lebih besar.",
-                        fontSize = 16.sp
-                    )
-                    Text(
-                        text = "Jika melakukan penjumlahan dan pengurangan pecahan dengan penyebut berbeda, paling baik menemukan penyebut bersama terkecil.",
-                        fontSize = 16.sp
-                    )
-                    Text(
-                        text = "Tetapi karena hanya membandingkan pecahan, Anda dapat mengambil jalan pintas dengan mengalikan penyebut kedua pecahan untuk menemukan penyebut bersama.",
-                        fontSize = 16.sp
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text("7 × 13 = 91. Jadi, penyebut yang baru adalah 91.", fontSize = 16.sp)
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Ubah pembilang kedua pecahan. Karena penyebut sudah diubah, pembilang juga perlu diubah agar nilai pecahan tetap sama. " +
-                                "Untuk itu, kalikan pembilang setiap pecahan dengan bilangan yang sama yang digunakan untuk mengalikan penyebut.",
-                        fontSize = 16.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text("Berikut ini caranya:", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        PecahanBiasa(5, 7)
-                        Text(" = ")
-                        PecahanBiasa(65, 91)
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("• ")
-                        Text("5×13 = 65")
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("• ")
-                        Text("7×13 = 91")
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        PecahanBiasa(9, 13)
-                        Text(" = ")
-                        PecahanBiasa(63, 91)
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("• ")
-                        Text("9×7 = 63")
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("• ")
-                        Text("13×7 = 91")
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        PecahanBiasa(65, 91)
-                        Text(" > ")
-                        PecahanBiasa(63, 91)
-                        Text(" artinya ")
-                        PecahanBiasa(5, 7)
-                        Text(" lebih besar dari ")
-                        PecahanBiasa(9, 13)
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Contoh :",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = Color.Blue
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "Membandingkan Pecahan",
-                        fontWeight = FontWeight.Bold,
+                        text = "Mengurutkan pecahan yang memiliki penyebut berbeda kita harus mengubah penyebutnya menjadi sama dengan mencari KPK dari penyebut pecahan-pecahan tersebut.",
                         fontSize = 16.sp,
-                        color = Color.Red
+                        color = Color.Black
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Selain itu kita bisa mengurutkan nilai pecahan melalui gambar loh, penasaran kan, berikut contohnya:",
+                        fontSize = 16.sp,
+                        color = Color.Black
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Image(
+                        painter = painterResource(id = R.drawable.urut4),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        contentScale = ContentScale.FillWidth
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "Setelah mengubah penyebut dan pembilang, dilanjutkan dengan membandingkan kedua pecahan\n" +
-                                "seperti cara membandingkan pecahan dengan penyebut sama."
+                        text = "Perhatikan gambar diatas, kita dapat mengurutkan pecahannya hanya dari luas yang telah kita warnai atau diarsir.",
+                        fontSize = 16.sp,
+                        color = Color.Black
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
-                        text = "Contoh soal:",
-                        fontWeight = FontWeight.Bold
+                        text = "Sekarang kita ingin mengurutkan nilai pecahannya dari yang terkecil, dan kita bisa lihat dari ketiga gambar mana yang paling sedikit mendapatkan warnanya:",
+                        fontSize = 16.sp,
+                        color = Color.Black
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
+                    Image(
+                        painter = painterResource(id = R.drawable.urut5),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        contentScale = ContentScale.FillWidth
+                    )
+                    Text(
+                        text = "Mengurutkan pecahan yang memiliki penyebut berbeda kita harus mengubah penyebutnya menjadi sama dengan mencari KPK dari penyebut pecahan-pecahan tersebut.",
+                        fontSize = 16.sp,
+                        color = Color.Black
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Soal awal
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        PecahanBiasa(3,5)
-                        Text(text = "  ...  ")
-                        PecahanBiasa(6,8)
-                        Text(text = "  mari kita bandingkan")
+                        PecahanBiasa(2, 4)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(", ")
+                        PecahanBiasa(1, 5)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(", ")
+                        PecahanBiasa(7, 8)
                     }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("   KPK dari 4, 5 dan 8 adalah 40", fontSize = 16.sp)
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Row {
-                        PecahanBiasa(3, 5)
-                        Text(text = " = ")
-                        PecahanBiasa(5, 40)
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Row {
-                        PecahanBiasa(6, 30)
-                        Text(text = " = ")
-                        PecahanBiasa(8, 40)
+                    // Konversi pecahan 2/4
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("2×10", fontSize = 14.sp, color = Color(0xFF009688))
+                            Box(
+                                modifier = Modifier
+                                    .height(2.dp)
+                                    .width(32.dp)
+                                    .background(Color.Black)
+                            )
+                            Text("4×10", fontSize = 16.sp, color = Color(0xFF009688))
+                        }
+                        Text(" = ")
+                        PecahanBiasa(20, 40)
+                        Text(" = ")
+                        PecahanBiasa(2, 4)
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Text(text = "(keterangan: KPK dari 5 dan 8 adalah 40)", fontStyle = FontStyle.Italic)
+                    // Konversi pecahan 1/5
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("1×8", fontSize = 16.sp, color = Color(0xFF1976D2))
+                            Box(
+                                modifier = Modifier
+                                    .height(2.dp)
+                                    .width(32.dp)
+                                    .background(Color.Black)
+                            )
+                            Text("5×8", fontSize = 14.sp, color = Color(0xFF1976D2))
+                        }
+                        Text(" = ")
+                        PecahanBiasa(8, 40)
+                        Text(" = ")
+                        PecahanBiasa(1, 5)
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Konversi pecahan 7/8
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("7×5", fontSize = 16.sp, color = Color(0xFFF57C00))
+                            Box(
+                                modifier = Modifier
+                                    .height(2.dp)
+                                    .width(32.dp)
+                                    .background(Color.Black)
+                            )
+                            Text("8×5", fontSize = 14.sp, color = Color(0xFFF57C00))
+                        }
+                        Text(" = ")
+                        PecahanBiasa(35, 40)
+                        Text(" = ")
+                        PecahanBiasa(7, 8)
+                    }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Row {
-                        Text(text = "Karena 24 < 30 maka ")
-                        PecahanBiasa(3, 5)
-                        Text(text = " < ")
-                        PecahanBiasa(6, 8)
+                    // Urutan akhir
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Urutan dari nilai terkecil ke terbesar adalah :", fontSize = 16.sp)
                     }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        PecahanBiasa(1, 5)
+                        Text(", ")
+                        PecahanBiasa(2, 4)
+                        Text(", ")
+                        PecahanBiasa(7, 8)
+                    }
+
+                    // Balon Penutup
+                    Text(
+                        text = buildAnnotatedString {
+                            append("Sekarang kamu sudah belajar cara ")
+                            withStyle(style = SpanStyle(color = merah)) {
+                                append("membandingkan")
+                            }
+                            append(" dan ")
+                            withStyle(style = SpanStyle(color = hijau)) {
+                                append("mengurutkan pecahan")
+                            }
+                            append(".\nTernyata nggak sulit, kan?\n\n")
+
+                            append("Dengan menyamakan penyebutnya,\n\n")
+
+                            append("kamu bisa tahu mana pecahan yang lebih besar, lebih kecil, atau sama.\n")
+                            append("Kamu juga bisa menyusun dari yang terkecil sampai terbesar atau sebaliknya.\n\n")
+
+                            withStyle(style = SpanStyle(color = biru)) {
+                                append("Gampang banget kalau sering latihan!\n")
+                            }
+
+                            withStyle(style = SpanStyle(color = orange)) {
+                                append("Yuk, terus belajar supaya makin pintar!")
+                            }
+                        },
+                        fontSize = 16.sp
+                    )
                 }
-                Spacer(modifier = Modifier.height(100.dp))
             }
         }
 
-        // BOTTOM NAVIGATION
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -409,9 +332,7 @@ fun BandingUrut4Screen(
                     enabled = isScrollAtBottom.value,
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isScrollAtBottom.value) Color(0xFF00BCD4) else Color(
-                            0xFF03A9F4
-                        ).copy(alpha = 0.5f)
+                        containerColor = if (isScrollAtBottom.value) Color(0xFF00BCD4) else Color(0xFF03A9F4).copy(alpha = 0.5f)
                     ),
                     modifier = Modifier
                         .width(140.dp)
@@ -432,4 +353,3 @@ fun BandingUrut4Screen(
         }
     }
 }
-
