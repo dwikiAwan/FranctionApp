@@ -1,8 +1,7 @@
 package com.example.franccompose
 
+// Make sure this is the correct import for TextStyle
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -42,13 +42,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-// Make sure this is the correct import for TextStyle
-import androidx.compose.ui.text.TextStyle // <-- THIS IS THE CORRECT IMPORT!
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+
 // Remove this incorrect import: import java.time.format.TextStyle
 
 @Composable
@@ -57,6 +57,9 @@ fun TentangScreen(navController: NavController) {
 
     var rating by remember { mutableStateOf(0) }
     var feedbackText by remember { mutableStateOf("") }
+    var isSubmitting by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val scrollState = rememberScrollState()
 
@@ -107,7 +110,6 @@ fun TentangScreen(navController: NavController) {
                     contentDescription = "Tentang Fraction App",
                     modifier = Modifier.size(300.dp)
                 )
-
             }
 
             Column(
@@ -120,18 +122,16 @@ fun TentangScreen(navController: NavController) {
                     )
                     .verticalScroll(scrollState)
                     .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Franction APP adalah aplikasi media pembelajaran berbasis Android yang dirancang khusus untuk membantu siswa/i dalam memahami konsep bilangan pecahan. Aplikasi ini menggunakan pendekatan gamifikasi untuk menciptakan pengalaman belajar yang menyenangkan, interaktif, dan mudah dipahami oleh anak-anak usia dini.",
+                    text = "Franction APP adalah aplikasi media pembelajaran berbasis Android...",
                     fontSize = 18.sp,
                     color = Color.Black,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 16.dp),
-                    style = TextStyle(lineHeight = 24.sp) // This should now work correctly
+                    style = TextStyle(lineHeight = 24.sp)
                 )
-                Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
                     text = "Semangat belajar pecahan, ya!",
@@ -151,6 +151,7 @@ fun TentangScreen(navController: NavController) {
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
+
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.padding(bottom = 16.dp)
@@ -173,6 +174,7 @@ fun TentangScreen(navController: NavController) {
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
+
                 OutlinedTextField(
                     value = feedbackText,
                     onValueChange = { feedbackText = it },
@@ -183,39 +185,117 @@ fun TentangScreen(navController: NavController) {
                         .padding(bottom = 16.dp)
                 )
 
+                if (errorMessage != null) {
+                    Text(
+                        text = errorMessage ?: "",
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+
                 Button(
                     onClick = {
-                        sendFeedbackEmail(context, rating, feedbackText)
-                    },
+                        if (rating == 0) {
+                            errorMessage = "Silakan beri penilaian minimal 1 bintang."
+                        } else {
+                            errorMessage = null
+                            isSubmitting = true
+
+                            sendFeedbackToFirestore(
+                                context = context,
+                                rating = rating,
+                                feedback = feedbackText,
+                                onSuccess = {
+                                    isSubmitting = false
+                                    showDialog = true
+                                    rating = 0
+                                    feedbackText = ""
+                                },
+                                onFailure = {
+                                    isSubmitting = false
+                                    Toast.makeText(context, "Gagal mengirim feedback: ${it.message}", Toast.LENGTH_LONG).show()
+                                }
+                            )
+                        }
+                    }
+                    ,
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3)),
                     modifier = Modifier
                         .width(200.dp)
                         .height(40.dp)
-                        .padding(bottom = 8.dp)
+                        .padding(bottom = 8.dp),
+                    enabled = !isSubmitting
                 ) {
-                    Text(text = "Kirim Feedback", color = Color.White, fontSize = 16.sp)
+                    Text(
+                        text = if (isSubmitting) "Mengirim..." else "Kirim Feedback",
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
                 }
+
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            containerColor = Color.White, // Background putih
+            title = {
+                Text(
+                    "Terima kasih!",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            },
+            text = {
+                Text(
+                    "Feedback Anda berhasil dikirim.",
+                    color = Color.Black
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red,     // Tombol warna merah
+                        contentColor = Color.White      // Tulisan "Tutup" warna putih
+                    )
+                ) {
+                    Text("Tutup")
+                }
+            }
+        )
+    }
+
 }
 
-fun sendFeedbackEmail(context: Context, rating: Int, feedback: String) {
-    val recipientEmail = "dwikikunia.awan@gmail.com"
-    val subject = "Feedback Aplikasi Fraction App (Rating: $rating Bintang)"
-    val body = "Rating: $rating Bintang\n\nTanggapan:\n$feedback"
 
-    val intent = Intent(Intent.ACTION_SENDTO).apply {
-        data = Uri.parse("mailto:")
-        putExtra(Intent.EXTRA_EMAIL, arrayOf(recipientEmail))
-        putExtra(Intent.EXTRA_SUBJECT, subject)
-        putExtra(Intent.EXTRA_TEXT, body)
-    }
-    if (intent.resolveActivity(context.packageManager) != null) {
-        context.startActivity(intent)
-    } else {
-        Toast.makeText(context, "Tidak ada aplikasi email terinstal.", Toast.LENGTH_SHORT).show()
-    }
+fun sendFeedbackToFirestore(
+    context: Context,
+    rating: Int,
+    feedback: String,
+    onSuccess: () -> Unit,
+    onFailure: (Exception) -> Unit
+) {
+    val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+    val feedbackData = hashMapOf(
+        "rating" to rating,
+        "feedback" to feedback,
+        "timestamp" to com.google.firebase.Timestamp.now()
+    )
+
+    db.collection("feedbacks")
+        .add(feedbackData)
+        .addOnSuccessListener {
+            onSuccess()
+        }
+        .addOnFailureListener {
+            onFailure(it)
+        }
 }
+
+

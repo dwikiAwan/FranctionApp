@@ -12,7 +12,7 @@ val SoalTingkat2 = listOf(
 
     //1
     UjiQuestion(
-        correctAnswerIndex = 1,
+        correctAnswerIndex = 0,
         customQuestionContent = { index ->
             Row( verticalAlignment = Alignment.CenterVertically) {
                 Text("${index + 1}. ", fontSize = 18.sp)
@@ -24,8 +24,8 @@ val SoalTingkat2 = listOf(
             }
         },
         optionContents = listOf(
-            { PecahanBiasa(2, 4) },
-            { PecahanBiasa(3, 4) },//ini
+            { PecahanBiasa(2, 4) },//ini
+            { PecahanBiasa(3, 4) },
             { PecahanBiasa(1, 6) },
             { PecahanBiasa(5, 4) }
         )
@@ -137,7 +137,7 @@ val SoalTingkat2 = listOf(
 
     //7
     UjiQuestion(
-        correctAnswerIndex = 2,
+        correctAnswerIndex = 0,
         customQuestionContent = { index ->
             Row( verticalAlignment = Alignment.CenterVertically) {
                 Text("${index + 1}. ", fontSize = 18.sp)
@@ -149,9 +149,9 @@ val SoalTingkat2 = listOf(
             }
         },
         optionContents = listOf(
-            { PecahanBiasa(3 ,6) },
+            { PecahanBiasa(3 ,6) },//ini
             { PecahanBiasa(4, 6) },
-            { PecahanBiasa(1, 2) },//ini
+            { PecahanBiasa(4, 2) },
             { PecahanBiasa(2, 3) }
         )
     ),

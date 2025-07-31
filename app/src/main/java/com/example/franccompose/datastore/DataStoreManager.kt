@@ -6,7 +6,10 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -14,7 +17,7 @@ import java.util.Locale
 private val Context.dataStore by preferencesDataStore(name = "user_prefs")
 
 class DataStoreManager(private val context: Context) {
-
+    private val firestore = FirebaseFirestore.getInstance()
     // ──────────────── Keys Utama ────────────────
     private val PROGRESS_KEY = intPreferencesKey("progress")
     private val LAST_USER_KEY = stringPreferencesKey("last_user")
@@ -40,19 +43,36 @@ class DataStoreManager(private val context: Context) {
     private fun timestampKey(n: String, k: String, materi: Int) =
         stringPreferencesKey("timestamp_${n}_${k}_materi$materi")
 
-
+    // --- FUNGSI BARU UNTUK MEMASTIKAN DOKUMEN PENGGUNA UTAMA ADA ---
+    private suspend fun ensureUserDocumentExists(nama: String, kelas: String) {
+        val userRef = firestore.collection("users").document("$nama|$kelas")
+        userRef.get().await().let {
+            if (!it.exists()) {
+                // Dokumen tidak ada, buat dokumen kosong atau dengan data dasar.
+                userRef.set(mapOf("nama" to nama, "kelas" to kelas)).await()
+            }
+        }
+    }
     // ──────────────── Save & Get Progress ────────────────
 
     suspend fun saveProgress(nama: String, kelas: String, progress: Int) {
-        val key = intPreferencesKey("progress_${nama}_${kelas}")
-        context.dataStore.edit { it[key] = progress }
-        println("Progress disimpan: $progress untuk $nama - $kelas")
+        // PERBAIKAN: Pastikan dokumen utama ada sebelum update.
+        ensureUserDocumentExists(nama, kelas)
+        val userRef = firestore.collection("users").document("$nama|$kelas")
+        val data = mapOf("progress" to progress)
+        userRef.set(data, SetOptions.merge()).await()
+        println("Progress disimpan ke Firebase: $progress untuk $nama - $kelas")
     }
 
     suspend fun getProgress(nama: String, kelas: String): Int {
-        val key = intPreferencesKey("progress_${nama}_${kelas}")
-        val prefs = context.dataStore.data.first()
-        return prefs[key] ?: 1
+        val userRef = firestore.collection("users").document("$nama|$kelas")
+        return try {
+            val snapshot = userRef.get().await()
+            snapshot.getLong("progress")?.toInt() ?: 1
+        } catch (e: Exception) {
+            println("Error getting progress from Firebase: ${e.message}")
+            1
+        }
     }
 
     // ──────────────── Last User ────────────────
@@ -60,10 +80,21 @@ class DataStoreManager(private val context: Context) {
         val newUser = "$nama|$kelas"
         context.dataStore.edit { prefs ->
             prefs[LAST_USER_KEY] = newUser
-            val existing = prefs[ALL_USERS_KEY]?.split(",")?.toMutableSet() ?: mutableSetOf()
-            existing.add(newUser)
-            prefs[ALL_USERS_KEY] = existing.joinToString(",")
         }
+        // PERBAIKAN: Pastikan dokumen pengguna utama ada setelah login.
+        ensureUserDocumentExists(nama, kelas)
+
+        val allUsersRef = firestore.collection("app_metadata").document("users")
+        val userSet = firestore.runTransaction { transaction ->
+            val snapshot = transaction.get(allUsersRef)
+            val existing = snapshot.get("users") as? MutableList<String> ?: mutableListOf()
+            if (!existing.contains(newUser)) {
+                existing.add(newUser)
+            }
+            transaction.set(allUsersRef, mapOf("users" to existing))
+            existing
+        }.await()
+        println("Last user and all users updated in Firebase.")
     }
 
     suspend fun getLastUser(): Pair<String, String>? {
@@ -75,30 +106,39 @@ class DataStoreManager(private val context: Context) {
 
     // ──────────────── Nilai / Skor per Materi ────────────────
 
+    suspend fun saveScore(nama: String, kelas: String, materiKe: Int, score: Int) {
+        // PERBAIKAN: Pastikan dokumen utama user ada sebelum menyimpan sub-collection.
+        ensureUserDocumentExists(nama, kelas)
 
-    suspend fun getFinalLevel(nama: String, kelas: String): Int {
-        val storedLevel = context.dataStore.data.first()[levelKey(nama, kelas)] ?: 1
-        return storedLevel.coerceAtMost(7)
+        val userRef = firestore.collection("users").document("$nama|$kelas")
+        userRef.collection("materi").document("materi_$materiKe")
+            .set(mapOf("score" to score), SetOptions.merge())
+            .await()
     }
-
 
     suspend fun setLevel(nama: String, kelas: String, level: Int) {
-        context.dataStore.edit {
-            it[levelKey(nama, kelas)] = level
-        }
-        println(" Level disimpan: $level untuk $nama - $kelas")
+        // PERBAIKAN: Pastikan dokumen utama user ada sebelum update.
+        ensureUserDocumentExists(nama, kelas)
+        val userRef = firestore.collection("users").document("$nama|$kelas")
+        userRef.update("level", level).await()
     }
 
-
-    suspend fun saveScore(nama: String, kelas: String, materiKe: Int, score: Int) {
-        context.dataStore.edit { it[scoreKey(nama, kelas, materiKe)] = score }
+    suspend fun getFinalLevel(nama: String, kelas: String): Int {
+        val userRef = firestore.collection("users").document("$nama|$kelas")
+        val snapshot = userRef.get().await()
+        return snapshot.getLong("level")?.toInt()?.coerceAtMost(7) ?: 1
     }
 
     suspend fun unlockMateri(nama: String, kelas: String, materi: Int) {
-        context.dataStore.edit { prefs ->
-            prefs[unlockKey(nama, kelas, materi)] = 1
-        }
+        // PERBAIKAN: Pastikan dokumen utama user ada sebelum update.
+        ensureUserDocumentExists(nama, kelas)
+
+        val userRef = firestore.collection("users").document("$nama|$kelas")
+        userRef.collection("materi").document("materi_$materi")
+            .set(mapOf("unlocked" to 1), SetOptions.merge())
+            .await()
     }
+
     suspend fun upgradeLevel(nama: String, kelas: String, materiKe: Int, tipe: String) {
         val targetLevel = when {
             tipe == "quiz" && materiKe == 1 -> 2
@@ -111,73 +151,119 @@ class DataStoreManager(private val context: Context) {
         }
 
         targetLevel?.let {
-            setLevel(nama, kelas, it)
-            println("Naik level ke $it (tipe: $tipe, materi: $materiKe)")
-        }
-    }
+            val currentLevel = getFinalLevel(nama, kelas)
 
-
-
-    // ──────────────── History Quiz per Materi ────────────────
-    suspend fun saveQuizHistory(nama: String, kelas: String, materiKe: Int, skor: Int, waktu: Int) {
-        val key = historyPerMateriKey(nama, kelas, materiKe)
-        // Gunakan Date dan SimpleDateFormat untuk timestamp
-        val currentTimestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-        val newItem = "$skor|$waktu|$currentTimestamp"
-        context.dataStore.edit { prefs ->
-            val set = prefs[key]?.toMutableSet() ?: mutableSetOf()
-            if (!set.contains(newItem)) {
-                set.add(newItem)
-                prefs[key] = set
+            if (it > currentLevel) {
+                setLevel(nama, kelas, it)
+                println("Naik level ke $it (tipe: $tipe, materi: $materiKe)")
+            } else {
+                println("Level tidak naik karena sudah mencapai level $it atau lebih tinggi.")
             }
         }
     }
+
+    // ──────────────── History Quiz per Materi ────────────────
+    suspend fun saveQuizHistory(nama: String, kelas: String, materiKe: Int, skor: Int, waktu: Int) {
+        // PERBAIKAN: Pastikan dokumen utama user ada sebelum menyimpan sub-collection.
+        ensureUserDocumentExists(nama, kelas)
+
+        val currentTimestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+        val historyData = mapOf(
+            "skor" to skor,
+            "waktu" to waktu,
+            "timestamp" to currentTimestamp
+        )
+
+        val userRef = firestore.collection("users").document("$nama|$kelas")
+        userRef.collection("materi").document("materi_$materiKe")
+            .collection("quiz_history").add(historyData)
+            .await()
+    }
+
     suspend fun getQuizHistoryForMateri(nama: String, kelas: String, materiKe: Int): List<Triple<Int, Int, String>> {
-        val prefs = context.dataStore.data.first()
-        return prefs[historyPerMateriKey(nama, kelas, materiKe)]?.mapNotNull {
-            val parts = it.split('|')
-            val skor = parts.getOrNull(0)?.toIntOrNull()
-            val waktu = parts.getOrNull(1)?.toIntOrNull()
-            val timestamp = parts.getOrNull(2)
-            if (skor != null && waktu != null && timestamp != null) Triple(skor, waktu, timestamp) else null
-        }?.sortedByDescending { it.third } // Opsional: Urutkan berdasarkan timestamp terbaru (string)
-            ?: emptyList()
+        val userRef = firestore.collection("users").document("$nama|$kelas")
+        return try {
+            val querySnapshot = userRef.collection("materi").document("materi_$materiKe")
+                .collection("quiz_history")
+                .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .get().await()
+
+            querySnapshot.documents.mapNotNull {
+                val skor = it.getLong("skor")?.toInt()
+                val waktu = it.getLong("waktu")?.toInt()
+                val timestamp = it.getString("timestamp")
+                if (skor != null && waktu != null && timestamp != null) {
+                    Triple(skor, waktu, timestamp)
+                } else null
+            }
+        } catch (e: Exception) {
+            println("Error getting quiz history from Firebase: ${e.message}")
+            emptyList()
+        }
     }
     // ──────────────── Info User (Email & Sekolah) ────────────────
     suspend fun saveUserInfo(nama: String, kelas: String, email: String, sekolah: String) {
-        context.dataStore.edit { prefs ->
-            prefs[emailKey(nama, kelas)] = email
-            prefs[sekolahKey(nama, kelas)] = sekolah
-        }
+        // PERBAIKAN: Pastikan dokumen utama user ada sebelum update.
+        ensureUserDocumentExists(nama, kelas)
+
+        val userRef = firestore.collection("users").document("$nama|$kelas")
+        val data = mapOf(
+            "email" to email,
+            "sekolah" to sekolah
+        )
+        userRef.set(data, SetOptions.merge()).await()
     }
 
     suspend fun getUserInfo(nama: String, kelas: String): Pair<String, String> {
-        val prefs = context.dataStore.data.first()
-        val email = prefs[emailKey(nama, kelas)] ?: ""
-        val sekolah = prefs[sekolahKey(nama, kelas)] ?: ""
-        return email to sekolah
+        val userRef = firestore.collection("users").document("$nama|$kelas")
+        return try {
+            val snapshot = userRef.get().await()
+            val email = snapshot.getString("email") ?: ""
+            val sekolah = snapshot.getString("sekolah") ?: ""
+            email to sekolah
+        } catch (e: Exception) {
+            println("Error getting user info from Firebase: ${e.message}")
+            "" to ""
+        }
     }
     // ──────────────── All Users ────────────────
     suspend fun getAllUsers(): List<Pair<String, String>> {
-        val prefs = context.dataStore.data.first()
-        return prefs[ALL_USERS_KEY]?.split(",")?.mapNotNull {
+        val allUsersRef = firestore.collection("app_metadata").document("users")
+        val snapshot = allUsersRef.get().await()
+        val users = snapshot.get("users") as? List<String> ?: emptyList()
+        return users.mapNotNull {
             val parts = it.split("|")
             if (parts.size == 2) parts[0] to parts[1] else null
-        } ?: emptyList()
+        }
     }
 
     suspend fun getAllUserDetails(): List<UserDetail> {
-        val prefs = context.dataStore.data.first()
-        val users = prefs[ALL_USERS_KEY]?.split(",") ?: emptyList()
-        return users.mapNotNull { user ->
-            val parts = user.split("|")
-            if (parts.size == 2) {
-                val nama = parts[0]
-                val kelas = parts[1]
-                val email = prefs[emailKey(nama, kelas)] ?: ""
-                val sekolah = prefs[sekolahKey(nama, kelas)] ?: ""
-                UserDetail(nama, kelas, email, sekolah)
-            } else null
+        return try {
+            // 1. Get the list of all user IDs from the app_metadata document.
+            val allUsersRef = firestore.collection("app_metadata").document("users")
+            val snapshot = allUsersRef.get().await()
+            val userIds = snapshot.get("users") as? List<String> ?: emptyList()
+
+            // 2. Fetch details for each user using their ID.
+            //    We use coroutines to run these fetches concurrently.
+            val userDetails = userIds.mapNotNull { userId ->
+                val userRef = firestore.collection("users").document(userId)
+                val userSnapshot = userRef.get().await()
+
+                // 3. Check if the snapshot exists and parse the data.
+                if (userSnapshot.exists()) {
+                    val (nama, kelas) = userId.split("|").takeIf { it.size == 2 } ?: return@mapNotNull null
+                    val email = userSnapshot.getString("email") ?: ""
+                    val sekolah = userSnapshot.getString("sekolah") ?: ""
+                    UserDetail(nama, kelas, email, sekolah)
+                } else {
+                    null
+                }
+            }
+            return userDetails
+        } catch (e: Exception) {
+            println("Error getting all user details from Firebase: ${e.message}")
+            emptyList()
         }
     }
 

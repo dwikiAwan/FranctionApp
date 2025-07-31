@@ -38,9 +38,10 @@ val SoalTingkat1 = listOf(
                 Row {
                     Text("${index + 1}. ", fontSize = 18.sp)
                     Text("Yang merupakan pecahan senilai dengan ", fontSize = 18.sp)
-                    PecahanBiasa(3, 6)
+
                 }
                 Row {
+                    PecahanBiasa(3, 6)
                     Text("adalah", fontSize = 18.sp)
                 }
             }
@@ -49,7 +50,7 @@ val SoalTingkat1 = listOf(
         optionContents = listOf(
             { PecahanBiasa(1, 2) },//ini
             { PecahanBiasa(1, 3) },
-            { PecahanBiasa(2, 3) },
+            { PecahanBiasa(2, 4) },
             { PecahanBiasa(1, 6) }
         )
     ),
@@ -60,7 +61,10 @@ val SoalTingkat1 = listOf(
                 Text("${index + 1}. ", fontSize = 18.sp)
                 Text("Pada pecahan ", fontSize = 18.sp)
                 PecahanBiasa(3, 5)
-                Text(", angka 5 disebut dengan …. ", fontSize = 18.sp)
+                Text(", angka 5 disebut ", fontSize = 18.sp)
+            }
+            Row {
+                Text("dengan … ", fontSize = 18.sp)
             }
         },
         options = listOf(
@@ -73,11 +77,10 @@ val SoalTingkat1 = listOf(
     UjiQuestion(
         correctAnswerIndex = 1,
         customQuestionContent = { index ->
-            Column {
+
                 Row {
                     Text("${index + 1}. ", fontSize = 18.sp)
                     Text("Urutan dari yang terbesar adalah...", fontSize = 18.sp)
-                }
             }
         },
         optionContents = listOf(
@@ -163,8 +166,8 @@ val SoalTingkat1 = listOf(
         )
     ),
     UjiQuestion(
-        question = "Jika dari 8 bagian kue dimakan 6 bagian, maka sisa kue adalah...",
-        correctAnswerIndex = 0,
+        question = "Jika dari 8 bagian kue dimakan 6 bagian, maka SISA kue adalah...",
+        correctAnswerIndex =0,
         optionContents = listOf(
             { PecahanBiasa(2, 8) },//ini
             { PecahanBiasa(3, 8) },

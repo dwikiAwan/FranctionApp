@@ -198,6 +198,65 @@ fun AppNavHost(
                 materiKe = 5
             )
         }
+        composable("hasilQuiz/{skor}/{waktu}/{materiKe}") { backStack ->
+            val skor = backStack.arguments?.getString("skor")?.toInt() ?: 0
+            val waktu = backStack.arguments?.getString("waktu")?.toInt() ?: 0
+            val materiKe = backStack.arguments?.getString("materiKe")?.toInt() ?: 1
+            val coroutineScope = rememberCoroutineScope()
+            val context = LocalContext.current
+            val dataStore = remember { DataStoreManager(context) }
+            val materiViewModel: MateriViewModel = viewModel(
+                factory = MateriViewModelFactory(context.applicationContext as Application)
+            )
+            HasilQuizScreen(
+                score = skor,
+                elapsedTime = waktu,
+                materiKe = materiKe,
+                onNextClick = {
+                    if (skor < 60) {
+                        navController.navigate("quiz/$materiKe")
+                    } else {
+                        coroutineScope.launch {
+                            val user = dataStore.getLastUser()
+                            user?.let { (nama, kelas) ->
+                                materiViewModel.selesaiQuiz(nama, kelas, materiKe)
+                                dataStore.upgradeLevel(nama, kelas, materiKe, "quiz")
+                            }
+
+
+                            val nextMateriScreen = when (materiKe + 1) {
+                                2 -> "materi2satu"
+                                3 -> "ujitingkat1"
+                                4 -> "materi3satu"
+                                5 -> "materi4satu"
+                                6 -> "ujitingkat2"
+                                else -> "daftarMateri"
+                            }
+                            navController.navigate(nextMateriScreen)
+                        }
+                    }
+                }
+                ,
+                onUlangMateriClick = {
+                    val screen = when (materiKe) {
+                        1 -> "materi1satu"
+                        2 -> "materi2satu"
+                        3 -> "ujitingkat1"
+                        4 -> "materi3satu"
+                        5 -> "materi4satu"
+                        6 -> "ujitingkat2"
+                        else -> "homeScreen"
+                    }
+                    navController.navigate(screen)
+                },
+                onMainMenuClick = {
+                    navController.navigate("daftarMateri") {
+                        popUpTo("hasilQuiz") { inclusive = true }
+                    }
+                },
+                materiViewModel = materiViewModel
+            )
+        }
 
         //UjiTingkat1
         composable("ujitingkat1") {
@@ -356,65 +415,7 @@ fun AppNavHost(
             )
         }
 
-        composable("hasilQuiz/{skor}/{waktu}/{materiKe}") { backStack ->
-            val skor = backStack.arguments?.getString("skor")?.toInt() ?: 0
-            val waktu = backStack.arguments?.getString("waktu")?.toInt() ?: 0
-            val materiKe = backStack.arguments?.getString("materiKe")?.toInt() ?: 1
-            val coroutineScope = rememberCoroutineScope()
-            val context = LocalContext.current
-            val dataStore = remember { DataStoreManager(context) }
-            val materiViewModel: MateriViewModel = viewModel(
-                factory = MateriViewModelFactory(context.applicationContext as Application)
-            )
-            HasilQuizScreen(
-                score = skor,
-                elapsedTime = waktu,
-                materiKe = materiKe,
-                onNextClick = {
-                    if (skor < 60) {
-                        navController.navigate("quiz/$materiKe")
-                    } else {
-                        coroutineScope.launch {
-                            val user = dataStore.getLastUser()
-                            user?.let { (nama, kelas) ->
-                                materiViewModel.selesaiQuiz(nama, kelas, materiKe)
-                                dataStore.upgradeLevel(nama, kelas, materiKe, "quiz")
-                            }
 
-
-                            val nextMateriScreen = when (materiKe + 1) {
-                                2 -> "materi2satu"
-                                3 -> "ujitingkat1"
-                                4 -> "materi3satu"
-                                5 -> "materi4satu"
-                                6 -> "ujitingkat2"
-                                else -> "daftarMateri"
-                            }
-                            navController.navigate(nextMateriScreen)
-                        }
-                    }
-                }
-                ,
-                onUlangMateriClick = {
-                    val screen = when (materiKe) {
-                        1 -> "materi1satu"
-                        2 -> "materi2satu"
-                        3 -> "ujitingkat1"
-                        4 -> "materi3satu"
-                        5 -> "materi4satu"
-                        6 -> "ujitingkat2"
-                        else -> "homeScreen"
-                    }
-                    navController.navigate(screen)
-                },
-                onMainMenuClick = {
-                    navController.navigate("daftarMateri") {
-                        popUpTo("hasilQuiz") { inclusive = true }
-                    }
-                },
-                materiViewModel = materiViewModel
-            )
-        }
         // ... (kode lainnya)
 
         composable("rapot/{materiKe}") { backStackEntry ->

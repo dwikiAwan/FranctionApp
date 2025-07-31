@@ -71,7 +71,7 @@ fun LevelkuScreen(
             // ===== HEADER =====
             Column(
                 modifier = Modifier
-                    .weight(0.1f)
+                    .weight(0.2f)
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -122,7 +122,7 @@ fun LevelkuScreen(
                     ) {
                         Text(
                             text = "Level $currentLevel",
-                            fontSize = 60.sp,
+                            fontSize = 80.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
@@ -133,7 +133,7 @@ fun LevelkuScreen(
                     Spacer(modifier = Modifier.height(15.dp))
 
                     Text(
-                        text = "Riwayat nilai anda",
+                        text = "Riwayat Nilai Anda",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.DarkGray

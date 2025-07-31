@@ -59,6 +59,10 @@ import com.example.franccompose.R
 import com.example.franccompose.fiturmulaibelajar.datastore.DataStoreManager
 import kotlinx.coroutines.delay
 
+// File: QuizScreen.kt
+
+// ... (Kode import lainnya)
+
 @Composable
 fun QuizScreen(
     navController: NavController,
@@ -107,9 +111,11 @@ fun QuizScreen(
     }
 
     val question = questions[questionIndex]
-    var selectedOption by remember(questionIndex) {
-        mutableStateOf(viewModel.selectedAnswers[questionIndex] ?: -1)
-    }
+
+    val selectedOptionFromViewModel = viewModel.selectedAnswers[questionIndex] ?: -1
+
+    var isLoading by remember { mutableStateOf(false) }
+
 
     Column(
         modifier = Modifier
@@ -177,9 +183,10 @@ fun QuizScreen(
         }
 
         // Soal & Pilihan
+
         Column(
             modifier = Modifier
-                .weight(1f)
+                .weight(5f)
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
@@ -190,7 +197,7 @@ fun QuizScreen(
             } else {
                 Text(
                     text = "${questionIndex + 1}. ${question.question ?: ""}",
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = Color.Black
                 )
@@ -225,13 +232,17 @@ fun QuizScreen(
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
                             .selectable(
-                                selected = selectedOption == index,
-                                onClick = { selectedOption = index }
+                                selected = selectedOptionFromViewModel == index,
+                                onClick = {
+                                    viewModel.submitAnswer(index)
+                                }
                             )
                     ) {
                         RadioButton(
-                            selected = selectedOption == index,
-                            onClick = { selectedOption = index }
+                            selected = selectedOptionFromViewModel == index,
+                            onClick = {
+                                viewModel.submitAnswer(index)
+                            }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(option, fontSize = 14.sp, color = Color.Black)
@@ -245,13 +256,17 @@ fun QuizScreen(
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
                             .selectable(
-                                selected = selectedOption == index,
-                                onClick = { selectedOption = index }
+                                selected = selectedOptionFromViewModel == index,
+                                onClick = {
+                                    viewModel.submitAnswer(index)
+                                }
                             )
                     ) {
                         RadioButton(
-                            selected = selectedOption == index,
-                            onClick = { selectedOption = index }
+                            selected = selectedOptionFromViewModel == index,
+                            onClick = {
+                                viewModel.submitAnswer(index)
+                            }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         optionComposable()
@@ -269,25 +284,35 @@ fun QuizScreen(
                 .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Button(
-                onClick = { viewModel.prevQuestion() },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                modifier = Modifier
-                    .weight(1f)
-                    .height(52.dp)
-            ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color(0xFF0B2B69))
-                Spacer(modifier = Modifier.width(4.dp))
-                Text("Kembali", color = Color(0xFF0B2B69), fontSize = 16.sp)
+            if (questionIndex > 0) {
+                Button(
+                    onClick = { viewModel.prevQuestion() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(52.dp)
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color(0xFF0B2B69)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Kembali", color = Color(0xFF0B2B69), fontSize = 16.sp)
+                }
+            } else {
+                // Spacer agar tombol Lanjut tetap di sebelah kanan
+                Spacer(modifier = Modifier.weight(1f))
             }
 
             Button(
                 onClick = {
-                    viewModel.submitAnswer(selectedOption)
-
                     if (viewModel.isLastQuestion()) {
                         val elapsed = 600 - viewModel.timeLeft
+                        isLoading = true
+
                         viewModel.simpanSkor(dataStore, materiKe, elapsed) { skorFinal ->
+                            isLoading = false
                             navController.navigate("hasilQuiz/$skorFinal/$elapsed/$materiKe") {
                                 popUpTo("materi${materiKe}Quiz") { inclusive = true }
                             }
@@ -296,7 +321,7 @@ fun QuizScreen(
                         viewModel.nextQuestion()
                     }
                 },
-                enabled = selectedOption != -1,
+                enabled = selectedOptionFromViewModel != -1,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                 modifier = Modifier
                     .weight(1f)
@@ -308,7 +333,11 @@ fun QuizScreen(
                     fontSize = 16.sp
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next", tint = Color(0xFF0B2B69))
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Next",
+                    tint = Color(0xFF0B2B69)
+                )
             }
         }
     }

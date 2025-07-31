@@ -19,6 +19,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             FrancComposeTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
                         factory = MateriViewModelFactory(context.applicationContext as Application)
                     )
 
-                    //AppNavHost
+                    // AppNavHost
                     AppNavHost(
                         navController = navController,
                         materiViewModel = materiViewModel

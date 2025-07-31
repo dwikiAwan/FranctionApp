@@ -51,11 +51,15 @@ class QuizViewModel : ViewModel() {
 
         if (questionList.isEmpty() || currentIndex >= questionList.size) return
 
-        _selectedAnswers[currentIndex] = answerIndex
-        if (questionList[currentIndex].correctAnswerIndex == answerIndex) {
+        val alreadyAnswered = _selectedAnswers.containsKey(currentIndex)
+        val correctAnswerIndex = questionList[currentIndex].correctAnswerIndex
+        if (!alreadyAnswered && answerIndex == correctAnswerIndex) {
             _score.value += 20
         }
+        _selectedAnswers[currentIndex] = answerIndex
     }
+
+
 
     fun nextQuestion() {
         if (_currentQuestionIndex.value < questions.value.lastIndex) {
@@ -86,23 +90,15 @@ class QuizViewModel : ViewModel() {
                 dataStore.saveQuizHistory(nama, kelas, materiKe, skor, waktu)
 
                 if (skor >= 80) {
-                    val currentProgress = dataStore.getProgress(nama, kelas)
-                    val updatedProgress = maxOf(currentProgress, materiKe + 1)
-                    dataStore.saveProgress(nama, kelas, updatedProgress)
-
-                    val currentLevel = dataStore.getFinalLevel(nama, kelas)
-                    val nextLevel = (currentLevel + 1).coerceAtMost(100)
-                    dataStore.setLevel(nama, kelas, nextLevel)
+                    dataStore.upgradeLevel(nama, kelas, materiKe, "quiz")
                 }
+                val currentProgress = dataStore.getProgress(nama, kelas)
+                val updatedProgress = maxOf(currentProgress, materiKe + 1)
+                dataStore.saveProgress(nama, kelas, updatedProgress)
 
                 onSaved(skor)
             }
         }
     }
-
-
-
 }
-
-
 

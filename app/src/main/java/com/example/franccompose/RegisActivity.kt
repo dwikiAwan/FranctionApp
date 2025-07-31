@@ -151,7 +151,7 @@ fun RegisScreen(
                         label = {
                             Text(
                                 "Kelas",
-                                color = MaterialTheme.colorScheme.onSurface // Adapts to theme (black/white)
+                                color = Color.Black // Adapts to theme (black/white)
                             )
                         },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expandedAngka) },
@@ -159,7 +159,6 @@ fun RegisScreen(
                             .menuAnchor()
                             .fillMaxWidth(),
                         shape = RoundedCornerShape(20.dp),
-                        // --- Set the background color here ---
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color(0xFF4CAF50),
                             unfocusedBorderColor = Color(0xFF5D5FEF),
@@ -168,7 +167,6 @@ fun RegisScreen(
                             focusedTextColor = MaterialTheme.colorScheme.onSurface, // Adapts to theme
                             unfocusedTextColor = MaterialTheme.colorScheme.onSurface, // Adapts to theme
                             cursorColor = Color(0xFF5D5FEF),
-                            // Set the container (background) color for both states to White
                             focusedContainerColor = Color.White,
                             unfocusedContainerColor = Color.White
                         )
@@ -207,7 +205,7 @@ fun RegisScreen(
                         label = {
                             Text(
                                 "Subkelas",
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = Color.Black
                             )
                         },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expandedHuruf) },

@@ -136,7 +136,7 @@ fun UjiTingkat1Screen(
         }
 
         // MAIN CONTENT
-        // MAIN CONTENT
+
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -351,45 +351,103 @@ fun CardPopupAwalUjian1(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF5D4037))
-            .padding(32.dp),
+            .padding(20.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
-                .background(Color.White, RoundedCornerShape(16.dp))
-                .padding(24.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .background(Color.White, RoundedCornerShape(24.dp))
+                .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "🔔 Persiapan Ujian",
+                text = "🔔 Persiapan Ujian 🔔",
+                fontSize = 25.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color(0xFF0D47A1)
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text = "Kamu akan memulai:",
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                color = Color.Black,
+                textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(12.dp))
+
             Text(
-                text = "Kamu akan memulai Uji Tingkat 1.\nTerdapat 10 soal yang harus kamu selesaikan dalam waktu 30 Menit.",
-                fontSize = 16.sp,
-                color = Color.Black
+                text = "UJIAN TINGKAT 1",
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF1565C0)
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = "Pada Uji Tingkat 1 ini kamu akan diuji pada materi\n1. Pengenalan Pecahan\n2. Membandingkan dan Mengurutkan Pecahan",
-                fontSize = 16.sp,
-                color = Color.Black
-            )
+
             Spacer(modifier = Modifier.height(16.dp))
+
             Text(
-                "🔥 Semangat ya, kami yakin kamu bisa !",
-                fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color(0xFF1976D2), textAlign = TextAlign.Center
+                text = "📋 Terdapat 10 soal yang harus kamu selesaikan\n🕒 Dalam waktu 30 menit",
+                fontSize = 17.sp,
+                color = Color.DarkGray,
+                textAlign = TextAlign.Center
             )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFE1F5FE), RoundedCornerShape(16.dp))
+                    .padding(16.dp)
+            ) {
+                Column(horizontalAlignment = Alignment.Start) {
+                    Text(
+                        text = "📘 Materi yang diujikan:",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF0277BD)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "1. Pengenalan Pecahan",
+                        fontSize = 17.sp,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = "2. Membandingkan dan\t\tMengurutkan Pecahan",
+                        fontSize = 17.sp,
+                        color = Color.Black
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "🔥 Semangat ya!\nkamu bisa menyelesaikannya dengan baik!",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = Color(0xFFD84315),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(28.dp))
+
             Button(
                 onClick = onStart,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF1A09)),
-                modifier = Modifier.fillMaxWidth()
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00C853)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
             ) {
-                Text("Mulai Ujian", color = Color.White, fontSize = 16.sp)
+                Text(
+                    text = "🚀 Mulai Ujian Sekarang",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }

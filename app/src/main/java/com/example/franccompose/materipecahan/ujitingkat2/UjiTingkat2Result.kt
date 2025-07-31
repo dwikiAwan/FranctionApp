@@ -138,7 +138,7 @@ fun UjiTingkat2ResultScreen(
                     .border(2.dp, Color.Black, RoundedCornerShape(30.dp)),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
-                Text("Kembali ke Beranda", color = Color.Black)
+                Text("Selesai", color = Color.Black)
             }
         }
     }

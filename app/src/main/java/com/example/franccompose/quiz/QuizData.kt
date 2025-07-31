@@ -1,10 +1,13 @@
 package com.example.franccompose.quiz
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 import com.example.franccompose.R
 import com.example.franccompose.materipecahan.PecahanBiasa
@@ -17,6 +20,8 @@ data class QuizQuestion(
     val optionContents: List<@Composable () -> Unit>? = null,
     val customQuestionContent: (@Composable (index: Int) -> Unit)? = null
 )
+
+
 
 val materi1Quiz = listOf(
     QuizQuestion(
@@ -86,13 +91,17 @@ val materi2Quiz = listOf(
     QuizQuestion(
         correctAnswerIndex = 2,
         customQuestionContent = { index ->
-            Row {
-                Text("${index + 1}. ", fontSize = 18.sp)
-                Text("Dari pecahan berikut, manakah yang lebih besar dari \n ", fontSize = 18.sp)
-            }
-            Row {
-                PecahanBiasa(1, 3)
-                Text(" ? ", fontSize = 18.sp)
+            Column {
+                Row {
+                    Text("${index + 1}. ", fontSize = 18.sp)
+                    Text("Dari pecahan berikut, manakah yang lebih besar dari ", fontSize = 18.sp)
+                }
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    PecahanBiasa(1, 3)
+                }
             }
         },
         optionContents = listOf(
@@ -116,21 +125,25 @@ val materi2Quiz = listOf(
     QuizQuestion(
         correctAnswerIndex = 2, // jawaban benar: 1/5, 2/5, 3/5, 4/5
         customQuestionContent = { index ->
-                Column {
-                    Row {
-                        Text("${index + 1}. ", fontSize = 18.sp)
-                        Text("Urutkan pecahan dari yang terkecil: ", fontSize = 18.sp)
-                    }
-                    Row {
-                        PecahanBiasa(2, 5)
-                        Text(", ", fontSize = 18.sp)
-                        PecahanBiasa(4, 5)
-                        Text(", ", fontSize = 18.sp)
-                        PecahanBiasa(3, 5)
-                        Text(", ", fontSize = 18.sp)
-                        PecahanBiasa(1, 5)
-                    }
+            Column {
+                Row {
+                    Text("${index + 1}. ", fontSize = 18.sp)
+                    Text("Urutkan pecahan dari yang terkecil: ", fontSize = 18.sp)
                 }
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    PecahanBiasa(2, 5)
+                    Text(", ", fontSize = 18.sp)
+                    PecahanBiasa(4, 5)
+                    Text(", ", fontSize = 18.sp)
+                    PecahanBiasa(3, 5)
+                    Text(", ", fontSize = 18.sp)
+                    PecahanBiasa(1, 5)
+                }
+            }
+
         },
         optionContents = listOf(
             { // a. 2/5, 4/5, 3/5, 1/5
@@ -182,22 +195,48 @@ val materi2Quiz = listOf(
     QuizQuestion(
         correctAnswerIndex = 0,
         customQuestionContent = { index ->
-            Row {
-                Text("${index + 1}. ", fontSize = 18.sp)
-                Text("Manakahh yang Sama Besar (=) dengan ", fontSize = 18.sp)
-                PecahanBiasa(3, 6)
+            Column {
+                Row {
+                    Text("${index + 1}. ", fontSize = 18.sp)
+                    Text("Manakah yang Sama Besar (=) dengan ", fontSize = 18.sp)
+                }
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    PecahanBiasa(3, 6)
+                }
             }
         },
         optionContents = listOf(
             { PecahanBiasa(1, 2) },//inni
             { PecahanBiasa(3, 4) },
             { PecahanBiasa(1, 4) },
-            { PecahanBiasa(2, 3) }
+            { PecahanBiasa(2, 1) }
         )
     ),
     QuizQuestion(
-        question = "Dari pecahan berikut manakah yang Paling Besar ?",
         correctAnswerIndex = 1,
+        customQuestionContent = { index ->
+            Column {
+                Row {
+                    Text("${index + 1}. ", fontSize = 18.sp)
+                    Text("Dari pecahan berikut manakah yang paling Besar ? ", fontSize = 18.sp)
+                }
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    PecahanBiasa(1, 8)
+                    Text(", ", fontSize = 18.sp)
+                    PecahanBiasa(1, 3)
+                    Text(", ", fontSize = 18.sp)
+                    PecahanBiasa(1, 6)
+                    Text(", ", fontSize = 18.sp)
+                    PecahanBiasa(1, 5)
+                }
+            }
+        },
         optionContents = listOf(
             { PecahanBiasa(1, 6) },
             { PecahanBiasa(1, 3) },//ini
@@ -241,7 +280,7 @@ val materi3Quiz = listOf(
         optionContents = listOf(
             { PecahanBiasa(2, 5) },
             { PecahanBiasa(3, 5) },
-            { PecahanBiasa(5, 6) },
+            { PecahanBiasa(1, 6) },
             { PecahanBiasa(7, 6) }//ini
         )
     ),
@@ -334,9 +373,9 @@ val materi4Quiz = listOf(
             }
         },
         optionContents = listOf(
-            { PecahanBiasa(1, 2) },//ini
+            { PecahanBiasa(2, 3) },//ini
             { PecahanBiasa(2, 2) },
-            { PecahanBiasa(3, 2) },
+            { PecahanBiasa(3, 3) },
             { PecahanBiasa(1, 4) }
         )
     ),

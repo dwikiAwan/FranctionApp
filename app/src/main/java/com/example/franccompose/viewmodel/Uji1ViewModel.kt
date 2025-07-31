@@ -60,7 +60,6 @@ class UjiTingkatViewModel : ViewModel() {
         poinPerSoal = if (soal.isNotEmpty()) 100 / soal.size else 0
     }
 
-
     // Simpan jawaban
     fun submitAnswer(answerIndex: Int) {
         val currentIndex = _currentQuestionIndex.value
@@ -104,7 +103,7 @@ class UjiTingkatViewModel : ViewModel() {
         for ((index, question) in soal.withIndex()) {
             val selected = selectedAnswers[index]
             if (selected == question.correctAnswerIndex) {
-                skor += poinPerSoal
+                skor += 10
             }
         }
         return skor
@@ -119,25 +118,12 @@ class UjiTingkatViewModel : ViewModel() {
 
                     dataStore.saveScore(nama, kelas, materiKe, skor)
                     dataStore.saveQuizHistory(nama, kelas, materiKe, skor, waktu)
-
                     if (skor >= 60) {
-                        val currentLevel = dataStore.getFinalLevel(nama, kelas)
-                        when (materiKe) {
-                            3 -> {
-                                if (currentLevel < 4) {
-                                    dataStore.saveProgress(nama, kelas, 4)
-                                    dataStore.upgradeLevel(nama, kelas, 3, "ujian")
-                                }
-                            }
-
-                            6 -> {
-                                if (currentLevel < 7) {
-                                    dataStore.saveProgress(nama, kelas, 7)
-                                    dataStore.upgradeLevel(nama, kelas, 6, "ujian")
-                                }
-                            }
-                        }
+                        dataStore.upgradeLevel(nama, kelas, materiKe, "ujian")
                     }
+                    val currentProgress = dataStore.getProgress(nama, kelas)
+                    val updatedProgress = maxOf(currentProgress, materiKe + 1)
+                    dataStore.saveProgress(nama, kelas, updatedProgress)
 
                     onSaved(skor)
                 }
@@ -145,6 +131,5 @@ class UjiTingkatViewModel : ViewModel() {
         }
     }
 }
-
 
 
