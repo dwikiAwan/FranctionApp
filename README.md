@@ -4,7 +4,7 @@
 
 ```text
 .  
-└── FranctionApp/app/src/main/java/com/example/franccompose/
+└── FranctionApp/app/src/main/java/com/unidagontor/franccompose/
     ├── datastore/
     │   └── DataStoreManager.kt
     ├── fiturmulaibelajar/
