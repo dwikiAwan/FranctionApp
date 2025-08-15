@@ -1,48 +1,23 @@
 # FranctionApp
 
+Belajar pecahan jadi seru! Tingkatkan level pecahanmu.
 ---
 Franction APP adalah aplikasi media pembelajaran berbasis Android yang dirancang khusus untuk membantu siswa/i dalam memahami konsep bilangan pecahan. Aplikasi ini menggunakan pendekatan gamifikasi untuk menciptakan pengalaman belajar yang menyenangkan, interaktif, dan mudah dipahami oleh anak-anak usia dini.
-            
-
-```text
-<<<<<<< HEAD
-.  
-└── FranctionApp/app/src/main/java/com/unidagontor/franccompose/
-    ├── datastore/
-    │   └── DataStoreManager.kt
-    ├── fiturmulaibelajar/
-    │   └── DaftarBelajar.kt
-    ├── ui/
-    │   └── theme/
-    │       ├── Color.kt
-    │       ├── Theme.kt
-    │       └── Type.kt
-    ├── viewmodel/
-    │   └── ViewModel.kt
-    ├── AppNavHost.kt
-    ├── FiturLevelku.kt
-    ├── HomeActivity.kt
-    ├── KeluarActivity.kt
-    ├── MainActivity.kt
-    ├── MenuButton.kt
-    ├── ProfileFitur.kt
-    ├── RegisActivity.kt
-    ├── Routes.kt
-    ├── SecondScreen.kt
-    ├── SplashScreen.kt
-    └── TentangFitur.kt
-=======
-Jetpack Compose adalah toolkit UI modern yang memungkinkan pengembang membangun UI menggunakan kode Kotlin secara deklaratif, menggantikan XML dalam pengembangan UI.
 
 ---
+Franction App : Belajar Matematika Pecahan Jadi Lebih Menyenangkan!
+Selamat datang di aplikasi “Frantion App”, media pembelajaran interaktif yang dirancang khusus untuk siswa kelas 5 SD. Dibuat berdasarkan penelitian skripsi, aplikasi ini hadir sebagai solusi inovatif untuk mengatasi kesulitan dan rendahnya minat siswa dalam memahami materi pecahan.
+Fitur Unggulan:
+a.	Pembelajaran Interaktif dan Menyenangkan: Kami mengubah materi pecahan yang sering dianggap sulit menjadi belajar yang seru dengan metode gamifikasi. Naikkan level di setiap materi!
+b.	Materi Lengkap Sesuai Kurikulum Kelas 5 SD:
+	Pengenalan konsep pecahan
+	Membandingkan dan mengurutkan pecahan
+	Operasi penjumlahan dan pengurangan pecahan
+c.	Kuis dan Uji Tingkat: Uji pemahaman Anda dengan kuis interaktif di setiap bab. Pantau kemajuan belajar Anda dengan fitur riwayat nilai dan uji tingkat yang menantang.
+d.	Desain Modern dan Ramah Anak: Tampilan antarmuka yang menarik, cerah, dan mudah digunakan, membuat pengalaman belajar menjadi lebih nyaman dan menyenangkan bagi anak-anak.
+e.	Pembelajaran Berbasis Android: Akses materi kapan saja dan di mana saja langsung dari perangkat smartphone atau Android Anda.
+Mengapa Memilih Aplikasi Kami?
+Aplikasi ini tidak hanya menyajikan materi, tetapi juga menumbuhkan motivasi dan minat belajar siswa. Kami percaya bahwa dengan pendekatan yang tepat, setiap anak bisa menguasai matematika, khususnya materi pecahan. Aplikasi ini dikembangkan untuk menjadi teman belajar yang efektif di sekolah maupun di rumah.
 
-> Pemanfaatan Jetpack Compose pada MobileDev
-> 
-> 
-> **Jetpack Compose:**
-> 
-> - Jetpack Compose adalah toolkit UI modern untuk Android yang memungkinkan pengembang membangun UI menggunakan bahasa pemrograman Kotlin.
-> - Compose menggunakan pendekatan deklaratif, di mana pengembang mendeskripsikan UI yang diinginkan, dan Compose bertanggung jawab untuk memperbarui UI secara otomatis saat data berubah.
-> - Compose menghilangkan kebutuhan akan XML untuk mendefinisikan UI, sehingga menyederhanakan proses pengembangan dan meningkatkan produktivitas.
-> - Compose menawarkan kinerja yang lebih baik, fleksibilitas, dan kemampuan beradaptasi dibandingkan dengan XML dalam pengembangan UI.
->>>>>>> e8376c3715c0e9e61256acf04787aa98bb0df1d9
+
+
