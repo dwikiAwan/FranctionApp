@@ -8,7 +8,7 @@ Franction APP adalah aplikasi media pembelajaran berbasis Android yang dirancang
 ---
 Belajar Matematika Pecahan Jadi Lebih Menyenangkan!
 ---
-Selamat datang di aplikasi “Frantion App”, media pembelajaran interaktif yang dirancang khusus untuk siswa kelas 5 SD. Dibuat berdasarkan penelitian skripsi, aplikasi ini hadir sebagai solusi inovatif untuk mengatasi kesulitan dan rendahnya minat siswa dalam memahami materi pecahan.
+
 
 
 
