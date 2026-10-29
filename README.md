@@ -8,10 +8,10 @@
 
 Media pembelajaran interaktif berbasis Android dengan pendekatan **gamifikasi** untuk siswa **kelas 5 SD**.
 
+[![Google Play](https://img.shields.io/badge/Google%20Play-Unduh%20Aplikasi-3DDC84?style=for-the-badge&logo=googleplay&logoColor=white)](https://play.google.com/store/apps/details?id=com.unidagontor.franctionapp&hl=en)
 ![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![Target](https://img.shields.io/badge/Target-Kelas%205%20SD-F4A93B?style=for-the-badge)
-![Topik](https://img.shields.io/badge/Materi-Bilangan%20Pecahan-E06C4C?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Aktif-5BA055?style=for-the-badge)
+![Materi](https://img.shields.io/badge/Materi-Bilangan%20Pecahan-E06C4C?style=for-the-badge)
 
 </div>
 
@@ -19,9 +19,9 @@ Media pembelajaran interaktif berbasis Android dengan pendekatan **gamifikasi** 
 
 ## Tentang Aplikasi
 
-**Franction App** adalah aplikasi media pembelajaran berbasis Android yang dirancang khusus untuk membantu siswa memahami konsep **bilangan pecahan**. Aplikasi ini lahir dari **penelitian skripsi** sebagai solusi inovatif atas dua masalah umum di kelas: **kesulitan memahami materi pecahan** dan **rendahnya minat belajar siswa**.
+**Franction App** adalah aplikasi media pembelajaran interaktif yang dirancang khusus untuk siswa kelas 5 SD. Aplikasi ini dibuat berdasarkan penelitian skripsi sebagai solusi atas kesulitan dan rendahnya minat siswa dalam memahami materi pecahan.
 
-Dengan pendekatan **gamifikasi**, belajar pecahan tidak lagi terasa membosankan. Siswa belajar sambil bermain, menyelesaikan tantangan, dan naik level, dengan tampilan yang mudah dipahami anak-anak.
+Melalui pendekatan **gamifikasi**, materi pecahan yang sering dianggap sulit diubah menjadi pengalaman belajar yang menyenangkan. Siswa dapat naik level di setiap pelajaran dan memantau perkembangan belajarnya, baik di sekolah maupun di rumah.
 
 > *Belajar Matematika Pecahan Jadi Lebih Menyenangkan!*
 
@@ -29,111 +29,52 @@ Dengan pendekatan **gamifikasi**, belajar pecahan tidak lagi terasa membosankan.
 
 ## Fitur Utama
 
-| Fitur | Deskripsi |
-|-------|-----------|
-| **Gamifikasi** | Belajar sambil bermain dengan level, tantangan, dan penghargaan |
-| **Materi Interaktif** | Penjelasan konsep pecahan yang ringkas, visual, dan mudah dipahami |
-| **Latihan Soal** | Soal bertahap untuk mengasah pemahaman siswa |
-| **Sistem Level** | Siswa terdorong untuk terus meningkatkan kemampuan |
-| **Tampilan Ramah Anak** | Desain berwarna cerah dan antarmuka sederhana |
-| **Berbasis Android** | Dapat digunakan kapan saja di perangkat Android |
-
-> Sesuaikan tabel fitur di atas dengan fitur yang benar-benar ada di aplikasi Anda.
-
----
-
-## Tampilan Aplikasi
-
-<div align="center">
-
-| Beranda | Materi | Kuis | Hasil |
-|:-------:|:------:|:----:|:-----:|
-| <img src="assets/screenshots/home.png" width="160"/> | <img src="assets/screenshots/materi.png" width="160"/> | <img src="assets/screenshots/kuis.png" width="160"/> | <img src="assets/screenshots/hasil.png" width="160"/> |
-
-</div>
-
-> Tambahkan screenshot aplikasi ke folder `assets/screenshots/` lalu sesuaikan nama file di atas.
+- **Pembelajaran interaktif dan menyenangkan**, dengan sistem level di setiap pelajaran
+- **Materi sesuai kurikulum kelas 5 SD**
+  - Pengenalan konsep pecahan
+  - Membandingkan dan mengurutkan pecahan
+  - Penjumlahan dan pengurangan pecahan
+- **Kuis interaktif** di setiap bab untuk menguji pemahaman
+- **Tes level** yang menantang serta **riwayat nilai** untuk memantau kemajuan belajar
+- **Desain ramah anak**, dengan tampilan cerah dan mudah digunakan
+- **Berbasis Android**, dapat diakses kapan saja dan di mana saja
 
 ---
 
-## Teknologi yang Digunakan
+## Teknologi dan Spesifikasi
 
-- **Platform:** Android
-- **Bahasa:** *(isi, misalnya Kotlin / Java / Dart)*
-- **IDE:** *(isi, misalnya Android Studio)*
-- **Database:** *(isi jika ada, misalnya SQLite / Firebase)*
-
----
-
-## Cara Menjalankan Project
-
-### Prasyarat
-- Android Studio versi terbaru
-- Android SDK sesuai konfigurasi project
-- Perangkat Android atau emulator
-
-### Langkah Instalasi
-
-```bash
-# 1. Clone repository
-git clone https://github.com/USERNAME/NAMA-REPO.git
-
-# 2. Masuk ke folder project
-cd NAMA-REPO
-
-# 3. Buka project di Android Studio, tunggu proses Gradle sync selesai
-
-# 4. Jalankan aplikasi (Run) di emulator atau perangkat fisik
-```
-
-### Unduh APK
-
-Unduh versi terbaru di halaman **[Releases](../../releases)**, lalu instal di perangkat Android Anda.
+| Aspek | Keterangan |
+|-------|------------|
+| Platform | Android |
+| Distribusi | Google Play Store |
+| Pendekatan Pembelajaran | Gamifikasi (level, kuis, dan tes level) |
+| Kategori | Pendidikan |
+| Kelompok Usia | 3+ |
+| Privasi | Tidak mengumpulkan maupun membagikan data pengguna ke pihak ketiga |
+| Package Name | `com.unidagontor.franctionapp` |
 
 ---
 
-## Untuk Siapa Aplikasi Ini?
+## Unduh Aplikasi
 
-- **Siswa kelas 5 SD** yang sedang belajar bilangan pecahan
-- **Guru** yang membutuhkan media pembelajaran interaktif
-- **Orang tua** yang ingin mendampingi anak belajar di rumah
-- **Peneliti dan mahasiswa** yang tertarik pada media pembelajaran berbasis gamifikasi
+Franction App tersedia di Google Play Store:
 
----
-
-## Kontribusi
-
-Kontribusi sangat diterima. Caranya:
-
-1. **Fork** repository ini
-2. Buat branch baru: `git checkout -b fitur/nama-fitur`
-3. Commit perubahan: `git commit -m "Menambahkan fitur ..."`
-4. Push ke branch: `git push origin fitur/nama-fitur`
-5. Buat **Pull Request**
-
----
-
-## Lisensi
-
-Project ini dilisensikan di bawah lisensi **MIT**. Lihat file [LICENSE](LICENSE) untuk detail.
-*(Ganti sesuai lisensi yang Anda gunakan.)*
+**[Unduh Franction App](https://play.google.com/store/apps/details?id=com.unidagontor.franctionapp&hl=en)**
 
 ---
 
 ## Pengembang
 
-**Nama Anda**
-- GitHub: [@USERNAME](https://github.com/USERNAME)
-- Email: email@contoh.com
+**Dwiki Kurniawan**
+GitHub: [@dwikiAwan](https://github.com/dwikiAwan)
+Universitas Darussalam Gontor
 
-*Dikembangkan sebagai bagian dari penelitian skripsi, [Nama Universitas].*
+Dikembangkan sebagai bagian dari penelitian skripsi di Universitas Darussalam Gontor.
 
 ---
 
 <div align="center">
 
 **Jika project ini bermanfaat, jangan lupa beri bintang.**
-
-Dibuat untuk pendidikan Indonesia
 
 </div>
