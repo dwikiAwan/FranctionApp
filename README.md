@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="assets/logoFranctionApp.png" alt="Logo Franction App" width="160"/>
-
 # Franction App
 
 ### Belajar Pecahan Jadi Seru! Tingkatkan Level Pecahanmu.
